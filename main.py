@@ -194,7 +194,7 @@ async def on_guild_join(guild):
 
 
 @client.command(name='purge')
-async def purge(ctx, count:int=100):
+async def purge(ctx, count:int=300):
     if not ctx.author.guild_permissions.manage_messages:
         return
     try:
