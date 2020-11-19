@@ -278,7 +278,12 @@ async def info(ctx):
             mentionStr += ctx.guild.get_channel(int(elem)).mention + " "
 
     embedInfo.set_author(name='Elimina Bot', url=client.user.avatar_url , icon_url=client.user.avatar_url)
-    embedInfo.add_field(name="This server has the following channels toggled on: ", value=mentionStr, inline=False)
+
+    if mentionStr == '':
+        embedInfo.add_field(name="This server has the following channels toggled on: ", value="No Channels toggled on use ~toggle", inline=False)
+    else:
+        embedInfo.add_field(name="This server has the following channels toggled on: ", value=mentionStr, inline=False)
+
     embedInfo.add_field(name="Timer set at: __" + str(data[val][0]) + " seconds__", value="\u200b", inline=False)
     embedInfo.add_field(name="_Messages from Elimina are deleted after 1 minute in toggled on channels_",value='*For help contact: eliminabot@gmail.com*', inline=False)
     embedInfo.set_footer(text="Requested by: " + ctx.message.author.name)
