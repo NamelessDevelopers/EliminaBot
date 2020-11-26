@@ -12,7 +12,7 @@ Elimina can also show you the most recently deleted message. It will show you th
 
 ***All messages from Elimina are deleted after 1 minute in toggled on channels***
 
-![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoBlackSmall.png "Elimina Logo")
+![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoBlackEmojiSize.png "Elimina Logo")
 
 ## 💌Invite
 The bot can be invited by following this link: [Click Here](https://discord.com/api/oauth2/authorize?client_id=777575449957498890&permissions=90112&scope=bot "Discord direct invite link")
@@ -21,7 +21,7 @@ The bot can be invited by following this link: [Click Here](https://discord.com/
 ## Support Server
 [Here is the Support Server invite link.](https://discord.gg/vFmFTjPpZ4 "Support Server Invite link")
 
-![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoBlackSmall.png "Elimina Logo")
+![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoBlackEmojiSize.png "Elimina Logo")
 
 
 
@@ -36,7 +36,7 @@ The bot can be invited by following this link: [Click Here](https://discord.com/
 ```~help```: To see a list of commands
 
 
-![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoBlackSmall.png "Elimina Logo")
+![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoBlackEmojiSize.png "Elimina Logo")
 
 
 **Commands below require special permissions**
