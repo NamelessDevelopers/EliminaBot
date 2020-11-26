@@ -1,4 +1,4 @@
-# About
+# ELIMINA DISCORD BOT
 Elimina is a discord bot that can automatically delete messages from bots after an X number of sends (set by an administrator) in selected (toggled on) channels. 
 
 ***Please keep in mind that the bot has to have access to read the channel inoroder to work.***
