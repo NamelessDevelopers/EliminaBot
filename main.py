@@ -23,6 +23,11 @@ snipe_message_id = None
 snipe_message_content = None
 snipe_message_author = None
 snipe_message_attachment = None
+snipe_message_guild = None
+snipe_message_channel = None
+
+# add superusers (the developers)
+SUPER_USERS = ['379269487532310530', '454342857239691306', '310860262624460801']
 
 # discord embed colors
 EMBED_COLORS = [
@@ -449,10 +454,15 @@ async def on_message_delete(message):
     global snipe_message_content
     global snipe_message_id
     global snipe_message_attachment
+    global snipe_message_guild
+    global snipe_message_channel
 
     snipe_message_id = message.id
     snipe_message_author = message.author
     snipe_message_content = message.content
+    snipe_message_guild = message.guild
+    snipe_message_channel = message.channel
+
     if message.attachments is not None:
         snipe_message_attachment = message.attachments[0].proxy_url
     await asyncio.sleep(60)
@@ -462,21 +472,26 @@ async def on_message_delete(message):
         snipe_message_author = None
         snipe_message_content = None
         snipe_message_attachment = None
+        snipe_message_guild = None
+        snipe_message_channel = None
 
 @client.command(name='snipe')
 async def snipe(ctx):
+
+    global snipe_message_attachment
+
     has_snipe = False
     author_roles = ctx.author.roles
     for role in author_roles:
         if role.name.lower() == 'sniper':
             has_snipe = True
 
-    if not ctx.author.guild_permissions.administrator and not has_snipe:
+    if not(str(ctx.author.id) in SUDO_USERS) and ctx.author.guild_permissions.administrator and not has_snipe:
         x = await ctx.send("You either need a role called `sniper` or be an `Administrator` to snipe.")
         await x.delete(delay=4)
         return
 
-    if snipe_message_content == None:
+    if snipe_message_guild != ctx.guild or snipe_message_channel != ctx.channel or snipe_message_content == None:
         x = await ctx.send("There is nothing to snipe!")
         await x.delete(delay=4)
         return
@@ -486,5 +501,6 @@ async def snipe(ctx):
         embed.set_image(url=snipe_message_attachment)
     embed.set_author(name=f"{snipe_message_author.name}#{snipe_message_author.discriminator}", icon_url=snipe_message_author.avatar_url)
     await ctx.send(embed=embed)
+    snipe_message_attachment = None
 
 client.run('TOKEN')
