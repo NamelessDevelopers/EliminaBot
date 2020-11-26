@@ -19,7 +19,7 @@ The bot can be invited by following [this link.](https://discord.com/api/oauth2/
 
 
 ## ![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoPurple.png "Elimina Logo") Support Server
-[Here is the Support Server invite link.](https://discord.gg/vFmFTjPpZ4 "Support Server Invite link")
+Here is the [Support Server](https://discord.gg/vFmFTjPpZ4 "Support Server Invite link") invite link.
 
 ---
 
