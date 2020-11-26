@@ -26,8 +26,8 @@ snipe_message_attachment = None
 snipe_message_guild = None
 snipe_message_channel = None
 
-# add superusers (the developers)
-SUPER_USERS = ['379269487532310530', '454342857239691306', '310860262624460801']
+# add sudo users (the developers)
+SUDO_USERS = ['379269487532310530', '454342857239691306', '310860262624460801']
 
 # discord embed colors
 EMBED_COLORS = [
@@ -193,12 +193,12 @@ async def _help(ctx):
     embedHelp.add_field(name="`~purge` <number of messages>[optional]:", value="  *Type in channel to manually clear recent(or if specified, n number of) messages sent by bots*", inline=False)
     embedHelp.add_field(name="`~timer <time in seconds>` :  __(Admin Only)__", value="  *Change default timer after which the bot messages are deleted. Default: 15 seconds*", inline=False)
     embedHelp.add_field(name="`~invite` :", value="  *To provide an invite link for a Discord server.*", inline=False)
-    embedHelp.add_field(name="`~ignore <bot>` :", value=" *To select bot(s) whose messages should not automatically be deleted due to the `~toggle` command.")
-    embedHelp.add_field(name="`~snipe` :", value=" *To show the latest deleted message with image (if any). The message must be deleted within a minute. Does not snipe messages sent by bots.")
+    embedHelp.add_field(name="`~ignore <bot>` :", value="*Add or Remove the bot(s) from server's Elimina whitelist*")
+    embedHelp.add_field(name="`~snipe` :", value="*To show the last text message or image deleted by a user within a minute on the same channel. __Does not snipe messages sent by bots.__*")
     embedHelp.add_field(name='\u200B', value='\u200B')
     embedHelp.add_field(name="Support Server",value='*https://discord.gg/vFmFTjPpZ4*', inline=False)
     embedHelp.add_field(name="_Messages from Elimina are deleted after 1 minute in toggled on channels_",value='*For help contact: eliminabot@gmail.com*', inline=False)
-    embedHelp.set_author(name='Elimina Bot', url=client.user.avatar_url , icon_url=client.user.avatar_url)
+    embedHelp.set_author(name='Elimina Bot', url="https://github.com/stoir/EliminaBot" , icon_url=client.user.avatar_url)
     embedHelp.set_footer(
         text="Requested by: " + ctx.message.author.name)
     await ctx.send(embed=embedHelp)
@@ -312,7 +312,7 @@ async def info(ctx):
                 continue
 
 
-    embedInfo.set_author(name='Elimina Bot', url=client.user.avatar_url , icon_url=client.user.avatar_url)
+    embedInfo.set_author(name='Elimina Bot', url="https://github.com/stoir/EliminaBot" , icon_url=client.user.avatar_url)
 
     botStr = ''
     for e in bot[val]:
@@ -343,7 +343,7 @@ async def info(ctx):
     embedInfo.set_footer(text="Requested by: " + ctx.message.author.name + "\nAuthors: AyamDobhal#1672, moizmoizmoizmoiz#5923, sc#2714")
     await ctx.send(embed=embedInfo)
 
-
+#https://discord.gg/vFmFTjPpZ4
 def update_data_file():
    # rewrites data to the data.txt file
     fileWrite(dictionary=data, fileName="data.txt")
@@ -486,7 +486,7 @@ async def snipe(ctx):
         if role.name.lower() == 'sniper':
             has_snipe = True
 
-    if not(str(ctx.author.id) in SUDO_USERS) and ctx.author.guild_permissions.administrator and not has_snipe:
+    if not ctx.author.guild_permissions.administrator and not has_snipe:
         x = await ctx.send("You either need a role called `sniper` or be an `Administrator` to snipe.")
         await x.delete(delay=4)
         return
