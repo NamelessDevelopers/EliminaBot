@@ -14,11 +14,11 @@ Elimina can also show you the most recently deleted message. It will show you th
 
 ---
 
-## ![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoEmojiSize.png "Elimina Logo") Invite
+## ![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoPurple.png "Elimina Logo") Invite
 The bot can be invited by following this link: [Click Here](https://discord.com/api/oauth2/authorize?client_id=777575449957498890&permissions=90112&scope=bot "Discord direct invite link")
 
 
-## ![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoEmojiSize.png "Elimina Logo") Support Server
+## ![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoPurple.png "Elimina Logo") Support Server
 [Here is the Support Server invite link.](https://discord.gg/vFmFTjPpZ4 "Support Server Invite link")
 
 ---
