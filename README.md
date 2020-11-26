@@ -2,7 +2,7 @@
 ---
 
 
-## ![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoBlackEmojiSize.png "Elimina Logo") 📃About
+## ![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoBlackEmojiSize.png "Elimina Logo") About
 Elimina is a discord bot that can automatically delete messages from bots after an X number of seconds (set by an administrator) in selected (toggled on) channels. 
 
 
@@ -48,8 +48,6 @@ The bot can be invited by following this link: [Click Here](https://discord.com/
 
 ```~snipe```: View the most recently deleted text, or image message. ***Requires administrator permissions or a role called Sniper.***
 
-
-![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoBlackSmall.png "Elimina Logo")
 
 
 ### End
