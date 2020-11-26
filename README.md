@@ -24,7 +24,7 @@ The bot can be invited by following this link: [Click Here](https://discord.com/
 ---
 
 ## ![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoBlackEmojiSize.png "Elimina Logo") All Commands
-**Commands:**
+### **Commands:**
 
 ```~info```:To see information about Elimina and how Elimina is set up in your server. This command will let you view toggled on channels, and ignored bots.
 
@@ -33,9 +33,7 @@ The bot can be invited by following this link: [Click Here](https://discord.com/
 ```~help```: To see a list of commands
 
 
-
-
-**Commands below require special permissions**
+### **Commands below require special permissions**
 
 ```~purge <optional: number of messages>```: deletes a default of 20 messages sent by bots, or an x number of messages sent by the command. ***Requires manage message permissions.***
 
