@@ -8,11 +8,11 @@ Elimina is a discord bot that can automatically delete messages from bots after 
 ***All messages from Elimina are deleted after 1 minute in toggled on channels***
 
 
-# Invite
+# 💌Invite
 The bot can be invited by following this link: [Click Here](https://discord.com/api/oauth2/authorize?client_id=777575449957498890&permissions=90112&scope=bot "Discord direct invite link")
 
 
-# All Commands
+# 💬All Commands
 **Commands:**
 
 ```~info```:To see information about Elimina and how Elimina is set up in your server
