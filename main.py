@@ -412,7 +412,7 @@ def update_bot_file():
 async def on_guild_remove(guild):
     data.pop(int(guild.id))
     bot.pop(int(guild.id))
-    image_snipe.pop(int(guid.id))
+    image_snipe.pop(int(guild.id))
 
     print(data)
     update_data_file()
