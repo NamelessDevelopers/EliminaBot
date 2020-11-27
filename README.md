@@ -45,6 +45,7 @@ Here is the [Support Server](https://discord.gg/vFmFTjPpZ4 "Support Server Invit
 
 ```~snipe```: View the most recently deleted text, or image message. ***Requires administrator permissions or a role called Sniper.***
 
+```~imgsnipe```: To enable/disable sniping of images using the `snipe` command. ***Requires administrator permissions.***
 
 ---
 ### End
