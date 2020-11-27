@@ -19,6 +19,7 @@ CREDS = None
 driveFiles = {}
 data = {}
 bot = {}
+image_snipe = {}
 snipe_message_id = None
 snipe_message_content = None
 snipe_message_author = None
@@ -26,11 +27,12 @@ snipe_message_attachment = None
 snipe_message_guild = None
 snipe_message_channel = None
 
-# add superusers (the IDs of the developers).
+
+# add sudo users (the developers)
 SUPER_USERS = ['379269487532310530', '454342857239691306', '310860262624460801']
 
 
-# discord embed colors.
+# discord embed colors
 EMBED_COLORS = [
     discord.Colour.magenta(),
     discord.Colour.dark_teal(),
@@ -53,23 +55,20 @@ EMBED_COLORS = [
 randomColor = randrange(len(EMBED_COLORS))
 
 
-# if modifying these scopes, delete the file token.pickle.
+# If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly', 'https://www.googleapis.com/auth/drive.appdata',
           'https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/drive.file']
 
-
-# the bot client.
 client = commands.Bot(command_prefix='~', status='Online', case_insensitive=True)
 client.remove_command("help")
 client.remove_command("timer")
 
 
-# from google.
+#from google
 if os.path.exists('token.pickle'):
     with open('token.pickle', 'rb') as token:
         CREDS = pickle.load(token)
-
-# if there are no (valid) credentials available, let the user log in.
+# If there are no (valid) credentials available, let the user log in.
 if not CREDS or not CREDS.valid:
     if CREDS and CREDS.expired and CREDS.refresh_token:
         CREDS.refresh(Request())
@@ -77,14 +76,13 @@ if not CREDS or not CREDS.valid:
         flow = InstalledAppFlow.from_client_secrets_file(
             'credentials.json', SCOPES)
         CREDS = flow.run_local_server(port=0)
-    
-    # save the credentials for the next run.
+    # Save the credentials for the next run
     with open('token.pickle', 'wb') as token:
         pickle.dump(CREDS, token)
 
 SERVICE = build('drive', 'v3', credentials=CREDS)
 
-# call the Drive v3 API.
+# Call the Drive v3 API
 results = SERVICE.files().list(
     pageSize=20, fields="nextPageToken, files(id, name)").execute()
 items = results.get('files', [])
@@ -99,7 +97,6 @@ else:
 print(driveFiles)
 
 
-# show `Playling ~help` on discord game activity.
 @client.event
 async def on_ready():
     game = discord.Game("~help")
@@ -108,17 +105,20 @@ async def on_ready():
 
 
 def main():
-    fileReadIntoDict("data.txt", data, " : ")
-    print("done reading data : ")
+    fileReadIntoDict("data_beta.txt", data, " : ")
+    print("done reading data: ")
     print(data)
-    fileReadIntoDict("bot.txt", bot, " : ")
-    print("done reading bot :")
+    fileReadIntoDict("bot_beta.txt", bot, " : ")
+    print("done reading bot: ")
     print(bot)
+    fileReadIntoDict("image_snipe.txt", image_snipe, " : ")
+    print("Done reading imagesnipe: ")
+    print(image_snipe)
 
 
 # reads the data files from Google drive. Data file is a .txt file stored
-# in the following format with a new line for each server which **sets up** Elimina
-# serverID : mode number | pins channel ID | any blacklisted channels separated by ' | '
+# in the following format with a new line for each server which **sets up** Passel
+# ServerID : mode number | pins channel ID | any blacklisted channels separated by ' | '
 def fileReadIntoDict(fileName, dictionary, separator):
     global SERVICE
     file = SERVICE.files().get(fileId=driveFiles[fileName]).execute()
@@ -156,7 +156,7 @@ def fileReadIntoDict(fileName, dictionary, separator):
     f.close()
 
 
-# writes data from a dictionary to a file.
+# file writes the data file
 def fileWrite(dictionary, fileName):
     file = open(fileName, "w")
     for val in dictionary:
@@ -174,7 +174,6 @@ if __name__ == '__main__':
     main()
 
 
-# automatically delete messages sent by Elimina in toggled channels in a minute.
 @client.event
 async def on_message(message):
     if message.author == client.user  and str(message.channel.id) in str(data[message.guild.id]):
@@ -191,7 +190,6 @@ async def on_message(message):
     await client.process_commands(message)
 
 
-# the help command.
 @client.command(name='help', pass_context=True)
 async def _help(ctx):
 
@@ -200,13 +198,14 @@ async def _help(ctx):
         colour=EMBED_COLORS[randomColor]
     )
 
-    embedHelp.add_field(name="`~info` :", value="  *To get information about how Elimina is setup in this sever.*", inline=False)
-    embedHelp.add_field(name="`~toggle` :  __(Admin only)__", value="  *Type in channel to activate or deactivate the bot in the respective channel.*", inline=False)
-    embedHelp.add_field(name="`~purge` <number of messages>[optional]:", value="  *Type in channel to manually clear recent(or if specified, n number of) messages sent by bots*", inline=False)
-    embedHelp.add_field(name="`~timer <time in seconds>` :  __(Admin Only)__", value="  *Change default timer after which the bot messages are deleted. Default: 15 seconds*", inline=False)
-    embedHelp.add_field(name="`~invite` :", value="  *To provide an invite link for a Discord server.*", inline=False)
+    embedHelp.add_field(name="`~info` :", value="  *To get information about how Elimina is setup in this server.*")
+    embedHelp.add_field(name="`~toggle` :  __(Admin only)__", value="  *Type in channel to activate or deactivate the bot in the respective channel.*")
     embedHelp.add_field(name="`~ignore <bot>` :", value="*Add or Remove the bot(s) from server's Elimina whitelist*")
-    embedHelp.add_field(name="`~snipe` :", value="*To show the last text message or image deleted by a user within a minute on the same channel. __Does not snipe messages sent by bots.__*")
+    embedHelp.add_field(name="`~timer <time in seconds>` :  __(Admin Only)__", value="  *Change default timer after which the bot messages are deleted. Default: 15 seconds*")
+    embedHelp.add_field(name="`~purge` <number of messages>[optional]:", value="  *Type in channel to manually clear recent(or if specified, n number of) messages sent by bots*")
+    embedHelp.add_field(name="`~snipe` :", value="*To show the last text message or image deleted by a user within a minute on the same channel. Does not snipe bots._*")
+    embedHelp.add_field(name="`~imgsnipe` :", value="*To enable/disable sniping of images using the `snipe` command.*")
+    embedHelp.add_field(name="`~invite` :", value="  *To provide an invite link for a Discord server.*")
     embedHelp.add_field(name='\u200B', value='\u200B')
     embedHelp.add_field(name="Support Server",value='*https://discord.gg/vFmFTjPpZ4*', inline=False)
     embedHelp.add_field(name="_Messages from Elimina are deleted after 1 minute in toggled on channels_",value='*For help contact: eliminabot@gmail.com*', inline=False)
@@ -216,13 +215,15 @@ async def _help(ctx):
     await ctx.send(embed=embedHelp)
 
 
-# send a message in #joins-leaves in the support server (https://discord.gg/vFmFTjPpZ4) whenever Elimina is added to a new server.
 @client.event
 async def on_guild_join(guild):
     data[guild.id] = ['5']
-    print("Joined data ")
-    print(data)
+    bot[guild.id] = ['5']
+    image_snipe[guild.id] = ['1']
+
     update_data_file()
+    update_bot_file()
+    update_img_file()
 
     guildsJoined = client.guilds
     embedJoin = discord.Embed(
@@ -234,8 +235,6 @@ async def on_guild_join(guild):
     await client.get_guild(777063033301106728).get_channel(779045674557767680).send(embed=embedJoin)
 
 
-# command to manually purge bot messages. takes an int as parameter.
-# requires the manage messages permission.
 @client.command(name='purge')
 async def purge(ctx, count:int=300):
     if not ctx.author.guild_permissions.manage_messages:
@@ -254,8 +253,6 @@ async def purge(ctx, count:int=300):
     await x.delete(delay=4)
 
 
-# command to toggle Elimina's auto-delete bot messages feature. Enter in the channel where Elimina needs to be toggled.
-# requires the administrator permission.
 @client.command(name='toggle')
 async def toggle(ctx):
     if not ctx.message.author.guild_permissions.administrator:
@@ -285,8 +282,6 @@ async def toggle(ctx):
         return
 
 
-# command to change the time after which the messages should be deleted in toggled channels.
-# takes an int as parameter such that 1 <= int <= 300. requires the administrator permission.
 @client.command(name='timer')
 async def _timer(ctx):
     if not ctx.message.author.guild_permissions.administrator:
@@ -307,7 +302,6 @@ async def _timer(ctx):
     update_data_file()
 
 
-# the info command.
 @client.command(name='info')
 async def info(ctx):
 
@@ -319,7 +313,6 @@ async def info(ctx):
         colour=EMBED_COLORS[randomColor]
     )
 
-    # check for toggled channels.
     val = int(ctx.guild.id)
     mentionStr = ''
     for elem in data[val]:
@@ -336,7 +329,6 @@ async def info(ctx):
 
     embedInfo.set_author(name='Elimina Bot', url="https://github.com/stoir/EliminaBot" , icon_url=client.user.avatar_url)
 
-    # check for ignored bots.
     botStr = ''
     for e in bot[val]:
         try:
@@ -360,6 +352,11 @@ async def info(ctx):
     else:
         embedInfo.add_field(name="This server has the following bots ignored: ", value=botStr, inline=False)
 
+    if image_snipe[ctx.guild.id][0] == '0':
+        embedInfo.add_field(name="This server has its image snipe setting set as: ", value="disabled", inline=False)
+    else:
+        embedInfo.add_field(name="This server has its image snipe setting set as: ", value="enabled", inline=False)
+
     embedInfo.add_field(name="Timer set at: __" + str(data[val][0]) + " seconds__", value="\u200b", inline=False)
     embedInfo.add_field(name="_Messages from Elimina are deleted after 1 minute in toggled on channels_",value='*For help contact: eliminabot@gmail.com*', inline=False)
     embedInfo.add_field(name="Support Server",value='*https://discord.gg/vFmFTjPpZ4*', inline=False)
@@ -367,8 +364,9 @@ async def info(ctx):
     await ctx.send(embed=embedInfo)
 
 
-# rewrites data to the data.txt file.
+#https://discord.gg/vFmFTjPpZ4
 def update_data_file():
+   # rewrites data to the data.txt file
     fileWrite(dictionary=data, fileName="data.txt")
     file_metadata = {'name': 'data.txt'}
 
@@ -389,7 +387,6 @@ def update_data_file():
         print("The file does not exist")
 
 
-# rewrites the data to the bot.txt file.
 def update_bot_file():
     fileWrite(dictionary=bot, fileName="bot.txt")
     file_metadata = {'name': 'bot.txt'}
@@ -411,12 +408,16 @@ def update_bot_file():
         print("The file does not exist")
 
 
-# send a message in #joins-leaves in the support server (https://discord.gg/vFmFTjPpZ4) whenever Elimina is removed from a server.
 @client.event
 async def on_guild_remove(guild):
     data.pop(int(guild.id))
+    bot.pop(int(guild.id))
+    image_snipe.pop(int(guid.id))
+
     print(data)
     update_data_file()
+    update_img_file()
+    update_bot_file()
 
     guildsJoined = client.guilds
     embedLeave = discord.Embed(
@@ -424,12 +425,10 @@ async def on_guild_remove(guild):
         description="ID: " + str(guild.id),
         colour=discord.Colour.dark_red()
     )
-    embedLeave.add_field(name="Support Server",value='*https://discord.gg/vFmFTjPpZ4*', inline=False)
     embedLeave.set_footer(text="Total Number of Servers: " + str(len(guildsJoined)))
     await client.get_guild(777063033301106728).get_channel(779045674557767680).send(embed=embedLeave)
 
 
-# command to get the bot invite link.
 @client.command(name='invite', pass_context=True)
 async def invite(ctx):
     embed_invite = discord.Embed(
@@ -442,8 +441,6 @@ async def invite(ctx):
     await ctx.send(embed=embed_invite)
 
 
-# command to ignore a bot such that its messages don't get deleted in toggled channels.
-# takes a bot as parameter. requires the administrator permission.
 @client.command(name='ignore', pass_context=True)
 async def ignore(ctx, user: discord.User):
     if not ctx.message.author.guild_permissions.administrator:
@@ -476,14 +473,12 @@ async def ignore(ctx, user: discord.User):
         return
 
 
-# check whenever a message is deleted and store it's details for next 60 seconds.
 @client.event
 async def on_message_delete(message):
 
-    # ignore messages sent by bots.
     if message.author.bot:
         return
-    
+
     global snipe_message_author
     global snipe_message_content
     global snipe_message_id
@@ -510,26 +505,30 @@ async def on_message_delete(message):
         snipe_message_channel = None
 
 
-# command to show the latest message that was deleted within the last 60 seconds. can also show images.
-# requires either the administrator permission or a role called 'sniper' (not case sensitive).
 @client.command(name='snipe')
 async def snipe(ctx):
 
     global snipe_message_attachment
 
-    # check for sniper role.
     has_snipe = False
     author_roles = ctx.author.roles
     for role in author_roles:
         if role.name.lower() == 'sniper':
             has_snipe = True
 
-    if not(str(ctx.author.id) in SUPER_USERS) and ctx.author.guild_permissions.administrator and not has_snipe:
+    is_superuser = str(ctx.author.id) in SUPER_USERS
+
+    if not is_superuser and not ctx.author.guild_permissions.administrator and not has_snipe:
         x = await ctx.send("You either need a role called `sniper` or be an `Administrator` to snipe.")
         await x.delete(delay=4)
         return
 
     if snipe_message_guild != ctx.guild or snipe_message_channel != ctx.channel or snipe_message_content == None:
+        x = await ctx.send("There is nothing to snipe!")
+        await x.delete(delay=4)
+        return
+
+    if snipe_message_attachment and not is_superuser and not ctx.author.guild_permissions.administrator and image_snipe[ctx.guild.id][0] == '0':
         x = await ctx.send("There is nothing to snipe!")
         await x.delete(delay=4)
         return
@@ -540,9 +539,48 @@ async def snipe(ctx):
         embed.set_image(url=snipe_message_attachment)
     embed.set_author(name=f"{snipe_message_author.name}#{snipe_message_author.discriminator}", icon_url=snipe_message_author.avatar_url)
     await ctx.send(embed=embed)
-
-    # remove the image url such that it isn't stuck in the memory.
     snipe_message_attachment = None
 
 
-client.run('TOKEN')
+@client.command(name='imgsnipe')
+async def imgsnipe(ctx):
+
+    if not ctx.author.guild_permissions.administrator:
+        return
+    guild = ctx.author.guild.id
+    imgsnipe = True
+    if str(guild) in str(image_snipe):
+        if image_snipe[guild][0] == '0':
+            imgsnipe = False
+
+    if not imgsnipe:
+        image_snipe[guild][0] = '1'
+        await ctx.send("Successfully enabled image sniping!")
+    if imgsnipe:
+        image_snipe[guild][0] = '0'
+        await ctx.send("Successfully disabled image sniping!")
+
+    print(image_snipe)
+    update_img_file()
+
+
+def update_img_file():
+    fileWrite(dictionary=image_snipe, fileName="image_snipe.txt")
+    file_metadata = {'name' : 'image_snipe.txt'}
+
+    media = MediaFileUpload('image_snipe.txt', mimetype='text/plain')
+
+    file = SERVICE.files().create(body=file_metadata,
+                                  media_body=media,
+                                  fields='id').execute()
+
+    SERVICE.files().delete(fileId=driveFiles['image_snipe.txt']).execute()
+
+    driveFiles['image_snipe.txt'] = file.get('id')
+
+    if os.path.exists('image_snipe.txt'):
+        os.remove('image_snipe.txt')
+    else:
+        print('The file does not exist')
+
+client.run("TOKEN")
