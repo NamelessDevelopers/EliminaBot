@@ -204,7 +204,7 @@ async def _help(ctx):
     embedHelp.add_field(name="`~timer <time in seconds>` :  __(Admin Only)__", value="  *Change default timer after which the bot messages are deleted. Default: 15 seconds*")
     embedHelp.add_field(name="`~purge` <number of messages>[optional]:", value="  *Type in channel to manually clear recent(or if specified, n number of) messages sent by bots*")
     embedHelp.add_field(name="`~snipe` :", value="*To show the last text message or image deleted by a user within a minute on the same channel. Does not snipe bots._*")
-    embedHelp.add_field(name="`~imgsnipe` :", value="*To enable/disable sniping of images using the `snipe` command.*")
+    embedHelp.add_field(name="`~imgsnipe` :  __(Admin only)__", value="*To enable/disable sniping of images using the `snipe` command.*")
     embedHelp.add_field(name="`~invite` :", value="  *To provide an invite link for a Discord server.*")
     embedHelp.add_field(name='\u200B', value='\u200B')
     embedHelp.add_field(name="Support Server",value='*https://discord.gg/vFmFTjPpZ4*', inline=False)
@@ -309,7 +309,8 @@ async def info(ctx):
         title="Server Setup Information",
         description="Elimina is a bot that can delete messages"
         ' sent from bot users after X number of seconds in toggled on channels. '
-        "Messages can be deleted after 1 second to after 300 seconds (5 minutes)!\nUse `~help` for more information",
+        'Messages can be deleted after 1 second to after 300 seconds (5 minutes)! Elimina '
+        ' also provides a snipe feature showing the most recently deleted text or image message.\nUse `~help` for more information",
         colour=EMBED_COLORS[randomColor]
     )
 
@@ -343,22 +344,22 @@ async def info(ctx):
                 continue
 
     if mentionStr == '':
-        embedInfo.add_field(name="This server has the following channels toggled on: ", value="No Channels toggled on use ~toggle", inline=False)
+        embedInfo.add_field(name="Following channels are toggled on: ", value="No Channels toggled on use ~toggle", inline=False)
     else:
-        embedInfo.add_field(name="This server has the following channels toggled on: ", value=mentionStr, inline=False)
+        embedInfo.add_field(name="Following channels are toggled on: ", value=mentionStr, inline=False)
 
     if botStr == '':
-        embedInfo.add_field(name="This server has the following bots ignored: ", value="No bots are ignored ~ignore <@bot>", inline=False)
+        embedInfo.add_field(name="Following bots are ignored: ", value="No bots are ignored ~ignore <@bot>", inline=False)
     else:
-        embedInfo.add_field(name="This server has the following bots ignored: ", value=botStr, inline=False)
+        embedInfo.add_field(name="Following bots are ignored: ", value=botStr, inline=False)
 
     if image_snipe[ctx.guild.id][0] == '0':
-        embedInfo.add_field(name="This server has its image snipe setting set as: ", value="disabled", inline=False)
+        embedInfo.add_field(name="Image Snipe: ", value="disabled", inline=True)
     else:
-        embedInfo.add_field(name="This server has its image snipe setting set as: ", value="enabled", inline=False)
+        embedInfo.add_field(name="Image Snipe:  ", value="enabled", inline=True)
 
-    embedInfo.add_field(name="Timer set at: __" + str(data[val][0]) + " seconds__", value="\u200b", inline=False)
-    embedInfo.add_field(name="_Messages from Elimina are deleted after 1 minute in toggled on channels_",value='*For help contact: eliminabot@gmail.com*', inline=False)
+    embedInfo.add_field(name="Timer set at: __" + str(data[val][0]) + " seconds__", value="\u200b", inline=True)
+
     embedInfo.add_field(name="Support Server",value='*https://discord.gg/vFmFTjPpZ4*', inline=False)
     embedInfo.set_footer(text="Requested by: " + ctx.message.author.name + "\nAuthors: AyamDobhal#1672, moizmoizmoizmoiz#5923, sc#2714")
     await ctx.send(embed=embedInfo)
