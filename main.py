@@ -105,10 +105,10 @@ async def on_ready():
 
 
 def main():
-    fileReadIntoDict("data_beta.txt", data, " : ")
+    fileReadIntoDict("data.txt", data, " : ")
     print("done reading data: ")
     print(data)
-    fileReadIntoDict("bot_beta.txt", bot, " : ")
+    fileReadIntoDict("bot.txt", bot, " : ")
     print("done reading bot: ")
     print(bot)
     fileReadIntoDict("image_snipe.txt", image_snipe, " : ")
@@ -478,7 +478,7 @@ async def on_message_delete(message):
 
     if message.author.bot:
         return
-
+    
     global snipe_message_author
     global snipe_message_content
     global snipe_message_id
@@ -532,7 +532,7 @@ async def snipe(ctx):
         x = await ctx.send("There is nothing to snipe!")
         await x.delete(delay=4)
         return
-
+    
     embed = discord.Embed(description=str(snipe_message_content), colour=EMBED_COLORS[randomColor])
     embed.set_footer(text=f"sniped by {ctx.author.name}#{ctx.author.discriminator}", icon_url=ctx.author.avatar_url)
     if snipe_message_attachment is not None:
@@ -552,14 +552,14 @@ async def imgsnipe(ctx):
     if str(guild) in str(image_snipe):
         if image_snipe[guild][0] == '0':
             imgsnipe = False
-
+    
     if not imgsnipe:
         image_snipe[guild][0] = '1'
         await ctx.send("Successfully enabled image sniping!")
     if imgsnipe:
         image_snipe[guild][0] = '0'
         await ctx.send("Successfully disabled image sniping!")
-
+    
     print(image_snipe)
     update_img_file()
 
@@ -583,4 +583,5 @@ def update_img_file():
     else:
         print('The file does not exist')
 
-client.run("TOKEN")
+
+client.run('TOKEN')
