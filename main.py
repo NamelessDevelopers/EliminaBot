@@ -26,9 +26,14 @@ snipe_message_attachment = None
 snipe_message_guild = None
 snipe_message_channel = None
 
+<<<<<<< HEAD
 
 # add superusers (the IDs of the developers).
 SUPER_USERS = ['379269487532310530', '454342857239691306', '310860262624460801']
+=======
+# add sudo users (the developers)
+SUDO_USERS = ['379269487532310530', '454342857239691306', '310860262624460801']
+>>>>>>> afd1fdc3d7c70f49ad9c75f8cf55141c41c5b5a4
 
 
 # discord embed colors.
@@ -206,12 +211,12 @@ async def _help(ctx):
     embedHelp.add_field(name="`~purge` <number of messages>[optional]:", value="  *Type in channel to manually clear recent(or if specified, n number of) messages sent by bots*", inline=False)
     embedHelp.add_field(name="`~timer <time in seconds>` :  __(Admin Only)__", value="  *Change default timer after which the bot messages are deleted. Default: 15 seconds*", inline=False)
     embedHelp.add_field(name="`~invite` :", value="  *To provide an invite link for a Discord server.*", inline=False)
-    embedHelp.add_field(name="`~ignore <bot>` :", value=" *To select bot(s) whose messages should not automatically be deleted due to the `~toggle` command.")
-    embedHelp.add_field(name="`~snipe` :", value=" *To show the latest deleted message with image (if any). The message must be deleted within a minute. Does not snipe messages sent by bots.")
+    embedHelp.add_field(name="`~ignore <bot>` :", value="*Add or Remove the bot(s) from server's Elimina whitelist*")
+    embedHelp.add_field(name="`~snipe` :", value="*To show the last text message or image deleted by a user within a minute on the same channel. __Does not snipe messages sent by bots.__*")
     embedHelp.add_field(name='\u200B', value='\u200B')
     embedHelp.add_field(name="Support Server",value='*https://discord.gg/vFmFTjPpZ4*', inline=False)
     embedHelp.add_field(name="_Messages from Elimina are deleted after 1 minute in toggled on channels_",value='*For help contact: eliminabot@gmail.com*', inline=False)
-    embedHelp.set_author(name='Elimina Bot', url=client.user.avatar_url , icon_url=client.user.avatar_url)
+    embedHelp.set_author(name='Elimina Bot', url="https://github.com/stoir/EliminaBot" , icon_url=client.user.avatar_url)
     embedHelp.set_footer(
         text="Requested by: " + ctx.message.author.name)
     await ctx.send(embed=embedHelp)
@@ -335,7 +340,7 @@ async def info(ctx):
                 continue
 
 
-    embedInfo.set_author(name='Elimina Bot', url=client.user.avatar_url , icon_url=client.user.avatar_url)
+    embedInfo.set_author(name='Elimina Bot', url="https://github.com/stoir/EliminaBot" , icon_url=client.user.avatar_url)
 
     # check for ignored bots.
     botStr = ''
@@ -367,8 +372,12 @@ async def info(ctx):
     embedInfo.set_footer(text="Requested by: " + ctx.message.author.name + "\nAuthors: AyamDobhal#1672, moizmoizmoizmoiz#5923, sc#2714")
     await ctx.send(embed=embedInfo)
 
+<<<<<<< HEAD
 
 # rewrites data to the data.txt file.
+=======
+#https://discord.gg/vFmFTjPpZ4
+>>>>>>> afd1fdc3d7c70f49ad9c75f8cf55141c41c5b5a4
 def update_data_file():
     fileWrite(dictionary=data, fileName="data.txt")
     file_metadata = {'name': 'data.txt'}
