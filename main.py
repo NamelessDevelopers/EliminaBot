@@ -310,7 +310,7 @@ async def info(ctx):
         description="Elimina is a bot that can delete messages"
         ' sent from bot users after X number of seconds in toggled on channels. '
         'Messages can be deleted after 1 second to after 300 seconds (5 minutes)! Elimina '
-        ' also provides a snipe feature showing the most recently deleted text or image message.\nUse `~help` for more information",
+        ' also provides a snipe feature showing the most recently deleted text or image message.\nUse `~help` for more information',
         colour=EMBED_COLORS[randomColor]
     )
 
