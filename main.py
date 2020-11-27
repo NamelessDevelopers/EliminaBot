@@ -26,14 +26,8 @@ snipe_message_attachment = None
 snipe_message_guild = None
 snipe_message_channel = None
 
-<<<<<<< HEAD
-
 # add superusers (the IDs of the developers).
 SUPER_USERS = ['379269487532310530', '454342857239691306', '310860262624460801']
-=======
-# add sudo users (the developers)
-SUDO_USERS = ['379269487532310530', '454342857239691306', '310860262624460801']
->>>>>>> afd1fdc3d7c70f49ad9c75f8cf55141c41c5b5a4
 
 
 # discord embed colors.
@@ -372,12 +366,8 @@ async def info(ctx):
     embedInfo.set_footer(text="Requested by: " + ctx.message.author.name + "\nAuthors: AyamDobhal#1672, moizmoizmoizmoiz#5923, sc#2714")
     await ctx.send(embed=embedInfo)
 
-<<<<<<< HEAD
 
 # rewrites data to the data.txt file.
-=======
-#https://discord.gg/vFmFTjPpZ4
->>>>>>> afd1fdc3d7c70f49ad9c75f8cf55141c41c5b5a4
 def update_data_file():
     fileWrite(dictionary=data, fileName="data.txt")
     file_metadata = {'name': 'data.txt'}
