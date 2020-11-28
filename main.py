@@ -183,11 +183,19 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.author.bot and str(message.channel.id) in str(data[message.guild.id]):
+    if not message.author.bot:
+        await client.process_commands(message)
+        return
+
+    bots_ignored = bot[message.guild.id]
+
+    if str(message.author.id) in bots_ignored:
+        print("true\n")
+        return
+
+    if str(message.channel.id) in str(data[message.guild.id]):
         delayTime = int(data[message.guild.id][0])
         await message.delete(delay=delayTime)
-
-    await client.process_commands(message)
 
 
 @client.command(name='help', pass_context=True)
