@@ -32,6 +32,8 @@ Here is the [Support Server](https://discord.gg/vFmFTjPpZ4 "Support Server Invit
 
 ```~help```: To see a list of commands
 
+```~editsnipe``` : To show the last message edited by a user within a minute on the same channel.
+
 
 ### **Commands below require special permissions**
 
