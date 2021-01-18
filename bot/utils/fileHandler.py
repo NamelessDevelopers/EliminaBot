@@ -172,15 +172,15 @@ class Servers(commands.Cog):
         )
         embedJoin.set_footer(text="Total Number of Servers: " + str(len(guilds)))
         await self.bot.get_guild(777063033301106728).get_channel(779045674557767680).send(embed=embedJoin)
-    
+
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
         global SHEETID, SERVICESHEET
 
         fileHandler()
-        
+
         guilds = self.bot.guilds
-        game = discord.Game(f".help | watching {len(guilds)} servers")
+        game = discord.Game(f"~help | watching {len(guilds)} servers")
         await self.bot.change_presence(status=discord.Status.online, activity=game)
 
         dataList = list(DATA)
@@ -191,14 +191,14 @@ class Servers(commands.Cog):
         DATA.pop(str(guild.id))
         BOT.pop(str(guild.id))
 
-        range = 'Sheet1!A' + dataidx + ':AAA' + dataidx
-        clear_values_request_body = { }
-        request = SERVICESHEET.spreadsheets().values().clear(spreadsheetId=SHEETID, range=range, body=clear_values_request_body)
+        spreadsheet_data = [{"deleteDimension": {"range": {"sheetId": GID-ID, "dimension": "ROWS", "startIndex": int(dataidx) - 1, "endIndex": int(dataidx)}}}]
+        update_data = {"requests": spreadsheet_data}
+        request = SERVICESHEET.spreadsheets().batchUpdate(spreadsheetId=SHEETID, body=update_data)
         request.execute()
 
-        range = 'Sheet2!A' + botidx + ':AAA' + botidx
-        clear_values_request_body = { }
-        request = SERVICESHEET.spreadsheets().values().clear(spreadsheetId=SHEETID, range=range, body=clear_values_request_body)
+        spreadsheet_data = [{"deleteDimension": {"range": {"sheetId": GID-ID, "dimension": "ROWS", "startIndex": int(botidx) - 1, "endIndex": int(botidx)}}}]
+        update_data = {"requests": spreadsheet_data}
+        request = SERVICESHEET.spreadsheets().batchUpdate(spreadsheetId=SHEETID, body=update_data)
         request.execute()
 
         embedLeave = discord.Embed(
