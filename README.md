@@ -2,7 +2,7 @@
 ---
 
 
-## ![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoBlackEmojiSize.png "Elimina Logo") About
+## ![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/public/logoBlackEmojiSize.png "Elimina Logo") About
 Elimina is a discord bot that can automatically delete messages from bots after an X number of seconds (set by an administrator) in selected (toggled on) channels. 
 
 
@@ -14,16 +14,16 @@ Elimina can also show you the most recently deleted message. It will show you th
 
 ---
 
-## ![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoPurple.png "Elimina Logo") Invite
+## ![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/public/logoPurple.png "Elimina Logo") Invite
 The bot can be invited by following [this link.](https://discord.com/api/oauth2/authorize?client_id=777575449957498890&permissions=17918992&scope=bot "Discord direct invite link")
 
 
-## ![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoPurple.png "Elimina Logo") Support Server
+## ![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/public/logoPurple.png "Elimina Logo") Support Server
 Here is the [Support Server](https://discord.gg/vFmFTjPpZ4 "Support Server Invite link") invite link.
 
 ---
 
-## ![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/Logos/logoBlackEmojiSize.png "Elimina Logo") All Commands
+## ![Elimina Logo](https://github.com/stoir/EliminaBot/blob/master/public/logoBlackEmojiSize.png "Elimina Logo") All Commands
 ### **Commands:**
 
 ```~info```:To see information about Elimina and how Elimina is set up in your server. This command will let you view toggled on channels, and ignored bots.
