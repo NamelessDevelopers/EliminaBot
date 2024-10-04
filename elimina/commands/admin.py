@@ -4,6 +4,8 @@ from discord.ext import commands
 
 from elimina import LOGGER
 from elimina.constants import COLORS
+from elimina.db.guild import *
+from elimina.exceptions.elimina_exceptions import TimeValueError
 from elimina.utils.fileHandler import (
     BOT,
     DATA,
@@ -25,53 +27,44 @@ class Admin(commands.Cog):
     @commands.has_permissions(administrator=True)
     @commands.cooldown(rate=1, per=60, type=commands.BucketType.guild)
     async def toggle(self, ctx: commands.Context) -> None:
-        channelID = ctx.channel.id
-        whiteListed = False
+        channel_id = ctx.channel.id
+        guild_id = ctx.guild.id
 
-        if str(ctx.guild.id) in str(DATA):
-            if str(channelID) in DATA[str(ctx.guild.id)]:
-                whiteListed = True
+        whitelist = await get_whitelists()
 
-        if whiteListed:
-            DATA[str(ctx.guild.id)].remove(str(channelID))
-            deactivateEmbed = Embed(
+        if guild_id in whitelist and channel_id in whitelist[guild_id]["channels"]:
+            await update_guild(guild_id, disabled_channel=channel_id)
+            deactivate_embed = Embed(
                 title=None,
                 color=COLORS["red"],
-                description="✅ Successfully deactivated {0.mention}!".format(
-                    ctx.channel
-                ),
+                description=f"✅ Successfully deactivated {ctx.channel.mention}!",
             )
-            await ctx.send(embed=deactivateEmbed)
+            await ctx.send(embed=deactivate_embed)
         else:
-            DATA[str(ctx.guild.id)].append(str(channelID))
-            activateEmbed = Embed(
+            await update_guild(guild_id, enabled_channel=channel_id)
+            activate_embed = Embed(
                 title=None,
                 color=COLORS["green"],
-                description="✅ Successfully activated {0.mention}!".format(
-                    ctx.channel
-                ),
+                description=f"✅ Successfully activated {ctx.channel.mention}!",
             )
-            await ctx.send(embed=activateEmbed)
-
-        data_update(ctx.guild.id)
+            await ctx.send(embed=activate_embed)
 
     @commands.command(name="timer", aliases=["wait", "delay"])
     @commands.has_permissions(administrator=True)
     @commands.cooldown(rate=1, per=60, type=commands.BucketType.guild)
     async def timer(self, ctx: commands.Context, time: int) -> None:
-        time = int(time)
+        guild_id = ctx.guild.id
         if time <= 0 or time > 300:
-            raise ValueError
+            raise TimeValueError(time)
 
-        DATA.get(str(ctx.guild.id))[0] = time
+        await update_guild(guild_id, delete_delay=time)
 
-        data_update(ctx.guild.id)
-        timerChangedEmbed = Embed(
+        time_changed_embed = Embed(
             title=None,
             color=COLORS["green"],
-            description=f"✅ Changed timer to **{DATA[str(ctx.message.author.guild.id)][0]} seconds.**",
+            description=f"✅ Changed timer to **{time} seconds.**",
         )
-        await ctx.send(embed=timerChangedEmbed)
+        await ctx.send(embed=time_changed_embed)
 
     @commands.command(name="imgsnipe", aliases=["imagesnipe", "image"])
     @commands.has_permissions(administrator=True)

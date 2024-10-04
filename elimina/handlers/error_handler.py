@@ -5,6 +5,7 @@ from discord.ext import commands
 
 from elimina import LOGGER
 from elimina.constants import COLORS
+from elimina.exceptions.elimina_exceptions import TimeValueError
 
 
 class ErrorHandler(commands.Cog):
@@ -46,11 +47,11 @@ class ErrorHandler(commands.Cog):
             )
             return await ctx.send(embed=user_error_embed)
 
-        if ctx.command.name == "timer":
+        if isinstance(error, TimeValueError):
             timer_error_embed = Embed(
                 title=None,
                 color=COLORS["red"],
-                description="❌ Invalid value for time. Must be between 1 and 300",
+                description=f"❌ Invalid value for time ({error.time}). Must be between 1 and 300",
             )
             return await ctx.send(embed=timer_error_embed)
 
