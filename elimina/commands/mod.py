@@ -20,7 +20,7 @@ class Mod(commands.Cog):
             if role.name.lower() == "moderation":
                 has_moderation = True
         manage_messages = ctx.author.guild_permissions.manage_messages
-        super_user = str(ctx.author.id) in SUPER_USERS.values()
+        super_user = ctx.author.id in SUPER_USERS
 
         if not (super_user or manage_messages or has_moderation):
             return
@@ -33,31 +33,31 @@ class Mod(commands.Cog):
             )
 
         except HTTPException:
-            errorEmbed = Embed(
+            error_embed = Embed(
                 title=None,
                 color=COLORS["red"],
                 description="❌ Unable to delete messages older than 14 days.",
             )
-            await ctx.send(embed=errorEmbed)
+            await ctx.send(embed=error_embed)
+
+        msg = None
 
         if not len(msgs):
-            purgeEmbed = Embed(
+            purge_embed = Embed(
                 title=None, color=COLORS["red"], description="❌ No messages to delete."
             )
-            x = await ctx.send(embed=purgeEmbed)
+            msg = await ctx.send(embed=purge_embed)
 
         else:
-            purgeEmbed = Embed(
+            purge_embed = Embed(
                 title=None,
                 color=COLORS["green"],
-                description="✅ Successfully deleted {} messages sent by bots.".format(
-                    len(msgs)
-                ),
+                description=f"✅ Successfully deleted {len(msgs)} messages sent by bots.",
             )
-            x = await ctx.send(embed=purgeEmbed)
+            msg = await ctx.send(embed=purge_embed)
 
         await ctx.message.delete()
-        await x.delete(delay=4)
+        await msg.delete(delay=4)
 
 
 def setup(bot: commands.Bot) -> None:
