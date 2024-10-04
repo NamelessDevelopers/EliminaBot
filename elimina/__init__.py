@@ -21,7 +21,7 @@ config = Config()
 
 client = commands.Bot(
     command_prefix="~",
-    intents=discord.Intents.default() | discord.Intents.message_content,
+    intents=discord.Intents(53608189),  # default intents + message content
     status="Online",
     case_insensitive=True,
 )
