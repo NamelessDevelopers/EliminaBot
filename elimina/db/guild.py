@@ -1,5 +1,6 @@
-from typing import List, Optional
+from typing import Dict, List, Optional, Set
 
+import cachetools
 from sqlalchemy.orm import Session
 
 from elimina import LOGGER
@@ -7,8 +8,32 @@ from elimina.db import engine
 from elimina.entities.guild import Guild
 from elimina.exceptions.db_exceptions import *
 
+cache = cachetools.LRUCache(maxsize=10000000)
 
-def get_guild(id: Optional[int]) -> Optional[List[Guild]]:
+
+@cachetools.cached(cache)
+async def get_whitelists() -> Optional[Dict[int, Dict[str, Set[int]]]]:
+    try:
+        with Session(engine) as session:
+            result = session.query(
+                Guild.id, Guild.toggled_channels, Guild.ignored_bots
+            ).all()
+            m: Dict[int, Dict[str, Set[int]]] = {}
+            if not result:
+                raise EntityNotFoundError()
+            for _id, channels, bots in result:
+                if _id not in m:
+                    m[_id] = {}
+                m[_id]["channels"] = set(channels)
+                m[_id]["bots"] = set(bots)
+            return m
+
+    except Exception as e:
+        LOGGER.exception("Failed to get whitelists due to: ", e)
+        return None
+
+
+async def get_guild(id: Optional[int]) -> Optional[List[Guild]]:
     """
     Function to get Guilds in the database.
 
@@ -33,7 +58,7 @@ def get_guild(id: Optional[int]) -> Optional[List[Guild]]:
         return None
 
 
-def create_guild(
+async def create_guild(
     guild_id: int,
     guild_name: str,
 ) -> Optional[Guild]:
@@ -69,7 +94,7 @@ def create_guild(
         return None
 
 
-def update_guild(
+async def update_guild(
     guild_id: int,
     guild_name: Optional[str],
     delete_delay: Optional[int],
@@ -121,7 +146,7 @@ def update_guild(
         return None
 
 
-def delete_guild(guild_id: int) -> None:
+async def delete_guild(guild_id: int) -> None:
     """
     Function to delete a Guild from the database.
 
