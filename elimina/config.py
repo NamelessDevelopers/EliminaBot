@@ -1,5 +1,3 @@
-from typing import List
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -8,7 +6,6 @@ class Config(BaseSettings):
 
     BOT_TOKEN: str
     DB_URI: str
-    SUPER_USERS: List[int]
     SUPPORT_EMAIL: str
     SUPPORT_SERVER_INVITE: str
     SUPPORT_SERVER_ID: int
