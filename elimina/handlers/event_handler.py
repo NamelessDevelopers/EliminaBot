@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from elimina import LOGGER
+from elimina import LOGGER, config
 from elimina.constants import COLORS
 from elimina.db.guild import *
 
@@ -40,6 +40,13 @@ class EventHandler(commands.Cog):
 
     @commands.Cog.listener("Message")
     async def on_message(self, message: discord.Message) -> None:
+        # add poll reactions if message starts with "poll:"
+        if not message.author.bot and message.content.startswith("poll: "):
+            await message.add_reaction(config.POLL_EMOTE_YES)
+            await message.add_reaction(config.POLL_EMOTE_NO)
+            await message.add_reaction(config.POLL_EMOTE_MAYBE)
+            return
+
         # if author is not a bot
         if not message.author.bot:
             return
