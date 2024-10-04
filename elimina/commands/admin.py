@@ -6,14 +6,6 @@ from elimina import LOGGER
 from elimina.constants import COLORS
 from elimina.db.guild import *
 from elimina.exceptions.elimina_exceptions import TimeValueError
-from elimina.utils.fileHandler import (
-    BOT,
-    DATA,
-    SERVICESHEET,
-    SHEETID,
-    bot_update,
-    data_update,
-)
 
 
 class Admin(commands.Cog):
@@ -22,6 +14,7 @@ class Admin(commands.Cog):
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
+        self.bot_id = bot.user.id
 
     @commands.command(name="toggle", aliases=["enable", "disable"])
     @commands.has_permissions(administrator=True)
@@ -39,15 +32,14 @@ class Admin(commands.Cog):
                 color=COLORS["red"],
                 description=f"✅ Successfully deactivated {ctx.channel.mention}!",
             )
-            await ctx.send(embed=deactivate_embed)
-        else:
-            await update_guild(guild_id, enabled_channel=channel_id)
-            activate_embed = Embed(
-                title=None,
-                color=COLORS["green"],
-                description=f"✅ Successfully activated {ctx.channel.mention}!",
-            )
-            await ctx.send(embed=activate_embed)
+            return await ctx.send(embed=deactivate_embed)
+        await update_guild(guild_id, enabled_channel=channel_id)
+        activate_embed = Embed(
+            title=None,
+            color=COLORS["green"],
+            description=f"✅ Successfully activated {ctx.channel.mention}!",
+        )
+        await ctx.send(embed=activate_embed)
 
     @commands.command(name="timer", aliases=["wait", "delay"])
     @commands.has_permissions(administrator=True)
@@ -70,80 +62,63 @@ class Admin(commands.Cog):
     @commands.has_permissions(administrator=True)
     @commands.cooldown(rate=1, per=60, type=commands.BucketType.guild)
     async def imgsnipe(self, ctx: commands.Context) -> None:
-        image_snipe = True
+        guild_id = ctx.guild.id
 
-        if str(ctx.guild.id) in str(DATA):
-            if DATA.get(str(ctx.guild.id))[1] == "0":
-                image_snipe = False
+        guild = await get_guild(guild_id)
 
-        if not image_snipe:
-            DATA.get(str(ctx.guild.id))[1] = "1"
-            enableEmbed = Embed(
-                title=None,
-                color=COLORS["green"],
-                description="✅ Successfully enabled image snipe!",
-            )
-            await ctx.send(embed=enableEmbed)
+        if not guild:
+            return
 
-        else:
-            DATA.get(str(ctx.guild.id))[1] = "1"
-            disableEmbed = Embed(
-                title=None,
-                color=COLORS["red"],
-                description="✅ Successfully disabled image snipe!",
-            )
-            await ctx.send(embed=disableEmbed)
+        image_snipe = guild[0].image_snipe
 
-        data_update(ctx.guild.id)
+        await update_guild(guild_id, image_snipe=not image_snipe)
+        embed = Embed(
+            title=None,
+            color=COLORS["green"] if not image_snipe else COLORS["red"],
+            description=f"✅ Successfully {"enabled"  if not image_snipe else "disabled"} image snipe!",
+        )
+        await ctx.send(embed=embed)
 
     @commands.command(name="ignore", aliases=["unignore", "whitelist"])
     @commands.has_permissions(administrator=True)
     @commands.cooldown(rate=1, per=60, type=commands.BucketType.guild)
     async def ignore(self, ctx: commands.Context, bot: discord.User) -> None:
-        global SHEETID, SERVICESHEET
-
+        guild_id = ctx.guild.id
+        bot_id = bot.id
         if not bot.bot:
-            errorEmbed = Embed(
+            error_embed = Embed(
                 title=None,
                 color=COLORS["red"],
                 description="❌ The mentioned user is not a bot.",
             )
-            return await ctx.send(embed=errorEmbed)
+            return await ctx.send(embed=error_embed)
 
-        if bot.id == 777575449957498890:
-            errorEmbed = Embed(
+        if bot_id == self.bot_id:
+            error_embed = Embed(
                 title=None, color=COLORS["red"], description="❌ You can't ignore me."
             )
-            await ctx.send(embed=errorEmbed)
+            await ctx.send(embed=error_embed)
 
-        userID = bot.id
-        whiteListed = False
+        whitelist = await get_whitelists()
 
-        if str(ctx.guild.id) in str(BOT):
-            if str(userID) in BOT[str(ctx.guild.id)]:
-                whiteListed = True
-
-        if whiteListed:
-            BOT[str(ctx.guild.id)].remove(str(userID))
-            unignoredEmbed = Embed(
+        if guild_id in whitelist and bot_id in whitelist[guild_id]["bots"]:
+            await update_guild(guild_id, unignored_bot=bot_id)
+            unignore_embed = Embed(
                 title=None,
                 color=COLORS["red"],
-                description="✅ Successfully un-ignored {0.mention}.".format(bot),
+                description=f"✅ Successfully un-ignored {bot.mention}.",
             )
-            await ctx.send(embed=unignoredEmbed)
+            await ctx.send(embed=unignore_embed)
 
         else:
-            BOT[str(ctx.guild.id)].append(str(userID))
-            BOT[str(ctx.guild.id)].append(str(userID))
+            await update_guild(guild_id, ignored_bot=bot_id)
 
-            ignoredEmbed = Embed(
+            ignore_embed = Embed(
                 title=None,
                 color=COLORS["green"],
-                description="✅ Successfully ignored {0.mention}.".format(bot),
+                description=f"✅ Successfully ignored {bot.mention}.",
             )
-            await ctx.send(embed=ignoredEmbed)
-
-        bot_update(ctx.guild.id)
+            await ctx.send(embed=ignore_embed)
 
 
 def setup(bot: commands.Bot) -> None:
