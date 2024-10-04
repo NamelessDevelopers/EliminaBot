@@ -1,4 +1,4 @@
-class BaseDbException(BaseException):
+class BaseDbException(Exception):
     """Base class for Database Exceptions."""
 
     pass
