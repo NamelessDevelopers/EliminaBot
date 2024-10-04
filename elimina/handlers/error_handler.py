@@ -35,9 +35,7 @@ class ErrorHandler(commands.Cog):
             cooldown_error_embed = Embed(
                 title=None,
                 color=COLORS["red"],
-                description="❌ That command is on cooldown for {} seconds.".format(
-                    int(command.get_cooldown_retry_after(ctx))
-                ),
+                description=f"❌ That command is on cooldown for {command.get_cooldown_retry_after(ctx)} seconds.",
             )
             return await ctx.send(embed=cooldown_error_embed)
 
