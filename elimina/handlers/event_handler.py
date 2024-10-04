@@ -1,14 +1,28 @@
+from collections import defaultdict
+
 import discord
 from discord.ext import commands
 
 from elimina import LOGGER, config
-from elimina.constants import COLORS
+from elimina.constants import COLORS, SUPER_USERS
 from elimina.db.guild import *
+from elimina.helpers.snipe import EditSnipe, Snipe
 
 
 class EventHandler(commands.Cog):
     """
     The EventHandler Class.
+
+    Attributes
+    ----------
+        bot : commands.Bot
+            The Discord Bot object.
+        bot_id : int
+            The id of the bot
+        snipe_message : Dict[int, Snipe]
+            Mapping of `guild_id` => Snipe. Stores most recently deleted Message in memory.
+        edit_snipe_message : Dict[int, EditSnipe]
+            Mapping of `guild_id` => EditSnipe. Stores most recently deleted Message in memory.
 
     Events Handled
     --------------
@@ -27,6 +41,8 @@ class EventHandler(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.bot_id = bot.user.id
+        self.snipe_message: Dict[int, Snipe] = defaultdict(int)
+        self.edit_snipe_message: Dict[int, EditSnipe] = defaultdict(int)
 
     @commands.Cog.listener("ready")
     async def on_ready(self):
@@ -86,7 +102,13 @@ class EventHandler(commands.Cog):
     @commands.Cog.listener("Guild Join")
     async def on_guild_join(self, guild: discord.Guild) -> None:
 
-        await create_guild(guild.id, guild.name)
+        guild_id = guild.id
+
+        await create_guild(guild_id, guild.name)
+
+        # init snipe and editsnipe for the guild_id
+        self.snipe_message[guild_id] = Snipe()
+        self.edit_snipe_message[guild_id] = EditSnipe()
 
         # update presence
         guilds = self.bot.guilds
@@ -96,7 +118,7 @@ class EventHandler(commands.Cog):
         # send message to Elimina server
         embed_join = discord.Embed(
             title="Joined " + guild.name,
-            description="ID: " + str(guild.id),
+            description="ID: " + str(guild_id),
             colour=COLORS["green"],
         )
         embed_join.set_footer(text="Total Number of Servers: " + str(len(guilds)))
@@ -107,7 +129,13 @@ class EventHandler(commands.Cog):
     @commands.Cog.listener("Guild Remove")
     async def on_guild_remove(self, guild: discord.Guild) -> None:
 
-        await delete_guild(guild.id)
+        guild_id = guild.id
+
+        await delete_guild(guild_id)
+
+        # delete snipe and editsnipe
+        del self.snipe_message[guild_id]
+        del self.edit_snipe_message[guild_id]
 
         # update presence
         guilds = self.bot.guilds
@@ -117,13 +145,175 @@ class EventHandler(commands.Cog):
         # send message to Elimina server
         embed_leave = discord.Embed(
             title="Left " + guild.name,
-            description="ID: " + str(guild.id),
+            description="ID: " + str(guild_id),
             colour=COLORS["red"],
         )
         embed_leave.set_footer(text="Total Number of Servers: " + str(len(guilds)))
         await self.bot.get_guild(777063033301106728).get_channel(
             779045674557767680
         ).send(embed=embed_leave)
+
+    @commands.Cog.listener("Message Delete")
+    async def on_message_delete(self, message: discord.Message) -> None:
+        guild_id = message.guild.id
+
+        # ignore if message author is a bot
+        if message.author.bot:
+            return
+
+        self.snipe_message[guild_id] = message
+
+    @commands.Cog.listener("Message Edit")
+    async def on_message_edit(
+        self, before: discord.Message, after: discord.Message
+    ) -> None:
+        guild_id = before.guild.id
+
+        # ignore if message author is bot
+        if before.author.bot:
+            return
+
+        self.edit_snipe_message[guild_id] = after
+
+    @commands.command(name="snipe")
+    async def snipe(self, ctx: commands.Context) -> None:
+        guild_id = ctx.guild.id
+
+        has_snipe = False
+        author_roles = ctx.author.roles
+        for role in author_roles:
+            if role.name.lower() == "sniper":
+                has_snipe = True
+
+        is_superuser = ctx.author.id in SUPER_USERS
+
+        if (
+            not is_superuser
+            and not ctx.author.guild_permissions.administrator
+            and not has_snipe
+        ):
+            error_embed = discord.Embed(
+                title=None,
+                color=COLORS["red"],
+                description="❌ You either need a role called `sniper` or be an `Administrator` to snipe.",
+            )
+            msg = await ctx.send(embed=error_embed)
+            return await msg.delete(delay=5)
+
+        snipe_message = self.snipe_message[guild_id].message
+        channel_id = ctx.channel.id
+
+        if not snipe_message or channel_id != snipe_message.channel.id:
+            error_embed = discord.Embed(
+                title=None,
+                color=COLORS["red"],
+                description="❌ There is nothing to snipe.",
+            )
+            msg = await ctx.send(embed=error_embed)
+            return await msg.delete(delay=5)
+
+        snipe_embed = discord.Embed(
+            description=snipe_message.content, color=COLORS["accent"]
+        )
+        snipe_embed.set_footer(
+            text=f"sniped by {ctx.author.name}#{ctx.author.discriminator}",
+            icon_url=(
+                ctx.author.avatar.url
+                if ctx.author.avatar
+                else ctx.author.display_avatar.url
+            ),
+        )
+        if snipe_message.attachments:
+            for attachment in snipe_message.attachments:
+                snipe_embed.add_field(
+                    attachment.filename, attachment.proxy_url, inline=True
+                )
+        snipe_embed.set_author(
+            name=snipe_message.author.display_name,
+            icon_url=(
+                snipe_message.author.avatar.url
+                if snipe_message.author.avatar
+                else snipe_message.author.display_avatar.url
+            ),
+        )
+        await ctx.send(snipe_embed)
+
+        # reset snipe_message for the guild
+        self.snipe_message[guild_id].message = None
+
+    @commands.command(name="editsnipe")
+    async def editsnipe(self, ctx: commands.Context) -> None:
+        guild_id = ctx.guild.id
+
+        has_snipe = False
+        author_roles = ctx.author.roles
+        for role in author_roles:
+            if role.name.lower() == "sniper":
+                has_snipe = True
+
+        is_superuser = ctx.author.id in SUPER_USERS
+
+        if (
+            not is_superuser
+            and not ctx.author.guild_permissions.administrator
+            and not has_snipe
+        ):
+            error_embed = discord.Embed(
+                title=None,
+                color=COLORS["red"],
+                description="❌ You either need a role called `sniper` or be an `Administrator` to snipe.",
+            )
+            msg = await ctx.send(embed=error_embed)
+            return await msg.delete(delay=5)
+
+        edit_snipe_message = self.edit_snipe_message[guild_id].message
+        edited_message = self.edit_snipe_message[guild_id].edited_message
+        channel_id = ctx.channel.id
+
+        if (
+            not edit_snipe_message
+            or not edited_message
+            or channel_id != edit_snipe_message.channel.id
+        ):
+            error_embed = discord.Embed(
+                title=None,
+                color=COLORS["red"],
+                description="❌ There is nothing to snipe.",
+            )
+            msg = await ctx.send(embed=error_embed)
+            return await msg.delete(delay=5)
+
+        snipe_embed = discord.Embed(
+            description="**Message edited:**", color=COLORS["accent"]
+        )
+        snipe_embed.add_field("**Before:**", edit_snipe_message.content, inline=True)
+        snipe_embed.add_field("**After:**", edited_message.content, inline=True)
+        snipe_embed.set_footer(
+            text=f"sniped by {ctx.author.name}#{ctx.author.discriminator}",
+            icon_url=(
+                ctx.author.avatar.url
+                if ctx.author.avatar
+                else ctx.author.display_avatar.url
+            ),
+        )
+        if edited_message.attachments:
+            for attachment in edit_snipe_message.attachments:
+                snipe_embed.add_field(
+                    attachment.filename, attachment.proxy_url, inline=True
+                )
+        snipe_embed.set_author(
+            name=edit_snipe_message.author.display_name,
+            icon_url=(
+                edit_snipe_message.author.avatar.url
+                if edit_snipe_message.author.avatar
+                else edit_snipe_message.author.display_avatar.url
+            ),
+        )
+        await ctx.send(snipe_embed)
+
+        # reset edit_snipe_message for the guild
+        self.edit_snipe_message[guild_id].message = None
+        self.edit_snipe_message[guild_id].edited_message = None
 
 
 def setup(bot: commands.Bot) -> None:
