@@ -2,14 +2,24 @@ import discord
 from discord.ext import commands
 
 from elimina import LOGGER
-from elimina.db.guild import get_guild, get_whitelists
+from elimina.constants import COLORS
+from elimina.db.guild import *
 
 
 class EventHandler(commands.Cog):
     """
     The EventHandler Class.
 
-    Handles `on_ready` and `on_message` events - the core functionality of Elimina.
+    Events Handled
+    --------------
+        Ready : on_ready
+            The event triggered once the bot establishes connection with Discord servers.
+        Message : on_message
+            The event triggered whenever the bot receives a message - core functionality of Elimina.
+        Guild Join : on_guild_join
+            The event triggered whenever the bot is added to a new guild.
+        Guild Remove : on_guild_remove
+            The event triggered whenever the bot is removed from a guild.
     """
 
     __cog_name__ = "Event Handler"
@@ -28,7 +38,7 @@ class EventHandler(commands.Cog):
         )
         print(f"Logged in as {self.bot}")
 
-    @commands.Cog.listener()
+    @commands.Cog.listener("Message")
     async def on_message(self, message: discord.Message) -> None:
         # if author is not a bot
         if not message.author.bot:
@@ -65,6 +75,48 @@ class EventHandler(commands.Cog):
                 return
             delete_delay = guild[0].delete_delay
             await message.delete(delay=delete_delay)
+
+    @commands.Cog.listener("Guild Join")
+    async def on_guild_join(self, guild: discord.Guild) -> None:
+
+        await create_guild(guild.id, guild.name)
+
+        # update presence
+        guilds = self.bot.guilds
+        presence = discord.Game(f"~help | watching {len(guilds)} servers")
+        await self.bot.change_presence(status=discord.Status.online, activity=presence)
+
+        # send message to Elimina server
+        embed_join = discord.Embed(
+            title="Joined " + guild.name,
+            description="ID: " + str(guild.id),
+            colour=COLORS["green"],
+        )
+        embed_join.set_footer(text="Total Number of Servers: " + str(len(guilds)))
+        await self.bot.get_guild(777063033301106728).get_channel(
+            779045674557767680
+        ).send(embed=embed_join)
+
+    @commands.Cog.listener("Guild Remove")
+    async def on_guild_remove(self, guild: discord.Guild) -> None:
+
+        await delete_guild(guild.id)
+
+        # update presence
+        guilds = self.bot.guilds
+        presence = discord.Game(f"~help | watching {len(guilds)} servers")
+        await self.bot.change_presence(status=discord.Status.online, activity=presence)
+
+        # send message to Elimina server
+        embed_leave = discord.Embed(
+            title="Left " + guild.name,
+            description="ID: " + str(guild.id),
+            colour=COLORS["red"],
+        )
+        embed_leave.set_footer(text="Total Number of Servers: " + str(len(guilds)))
+        await self.bot.get_guild(777063033301106728).get_channel(
+            779045674557767680
+        ).send(embed=embed_leave)
 
 
 def setup(bot: commands.Bot) -> None:
