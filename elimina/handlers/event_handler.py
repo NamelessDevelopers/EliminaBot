@@ -106,10 +106,6 @@ class EventHandler(commands.Cog):
 
         await create_guild(guild_id, guild.name)
 
-        # init snipe and editsnipe for the guild_id
-        self.snipe_message[guild_id] = Snipe()
-        self.edit_snipe_message[guild_id] = EditSnipe()
-
         # update presence
         guilds = self.bot.guilds
         presence = discord.Game(f"~help | watching {len(guilds)} servers")
@@ -157,6 +153,14 @@ class EventHandler(commands.Cog):
     async def on_message_delete(self, message: discord.Message) -> None:
         guild_id = message.guild.id
 
+        guild = await get_guild(guild_id)
+
+        if not guild:
+            return
+
+        if not guild[0].snipe_enabled:
+            return
+
         # ignore if message author is a bot
         if message.author.bot:
             return
@@ -169,6 +173,14 @@ class EventHandler(commands.Cog):
     ) -> None:
         guild_id = before.guild.id
 
+        guild = await get_guild(guild_id)
+
+        if not guild:
+            return
+
+        if not guild[0].snipe_enabled:
+            return
+
         # ignore if message author is bot
         if before.author.bot:
             return
@@ -178,6 +190,17 @@ class EventHandler(commands.Cog):
     @commands.command(name="snipe")
     async def snipe(self, ctx: commands.Context) -> None:
         guild_id = ctx.guild.id
+
+        guild = await get_guild(guild_id)
+
+        if not guild:
+            return
+
+        if not guild[0].snipe_enabled:
+            embed = discord.Embed(
+                color=COLORS["red"], description="❌ sniping is disabled!"
+            )
+            return await ctx.send(embed=embed)
 
         has_snipe = False
         author_roles = ctx.author.roles
@@ -244,6 +267,17 @@ class EventHandler(commands.Cog):
     @commands.command(name="editsnipe")
     async def editsnipe(self, ctx: commands.Context) -> None:
         guild_id = ctx.guild.id
+
+        guild = await get_guild(guild_id)
+
+        if not guild:
+            return
+
+        if not guild[0].snipe_enabled:
+            embed = discord.Embed(
+                color=COLORS["red"], description="❌ sniping is disabled!"
+            )
+            return await ctx.send(embed=embed)
 
         has_snipe = False
         author_roles = ctx.author.roles
@@ -314,6 +348,35 @@ class EventHandler(commands.Cog):
         # reset edit_snipe_message for the guild
         self.edit_snipe_message[guild_id].message = None
         self.edit_snipe_message[guild_id].edited_message = None
+    
+    @commands.command(name="togglesnipe")
+    @commands.has_permissions(administrator=True)
+    @commands.cooldown(rate=1, per=60, type=commands.BucketType.guild)
+    async def togglesnipe(self, ctx: commands.Context) -> None:
+        guild_id = ctx.guild.id
+
+        guild = await get_guild(guild_id)
+
+        if not guild:
+            return
+        
+        snipe_enabled = guild[0].snipe_enabled
+
+        if snipe_enabled:
+            del self.snipe_message[guild_id]
+            del self.edit_snipe_message[guild_id]
+        else:
+            self.snipe_message[guild_id] = Snipe()
+            self.edit_snipe_message[guild_id] = EditSnipe()
+
+        await update_guild(guild_id, snipe_enabled=not snipe_enabled)
+
+        embed = discord.Embed(
+            title=None,
+            color=COLORS["green"] if not snipe_enabled else COLORS["red"],
+            description=f"✅ Successfully {"enabled"  if not snipe_enabled else "disabled"} snipe!",
+        )
+        await ctx.send(embed=embed)
 
 
 def setup(bot: commands.Bot) -> None:

@@ -103,6 +103,7 @@ async def update_guild(
     ignored_bot: Optional[int],
     unignored_bot: Optional[int],
     image_snipe: Optional[bool],
+    snipe_enabled: Optional[bool],
 ) -> Optional[Guild]:
     """
     Function to update a Guild in the database.
@@ -124,7 +125,9 @@ async def update_guild(
         unignored_bot : Optional[int]
             An optional bot id to be removed from `ignored_bots`.
         image_snipe : Optional[bool]
-            An optional boolean value to update `image_snipe`.
+            An optional bool value to update `image_snipe`.
+        snipe_enabled : Optional[bool]
+            An optional bool value to update `snipe_enabled`.
     Returns
     -------
         guild : Optional[Guild]
@@ -149,6 +152,8 @@ async def update_guild(
                 guild.ignored_bots.remove(unignored_bot)
             if image_snipe is not None:
                 guild.image_snipe = image_snipe
+            if snipe_enabled is not None:
+                guild.snipe_enabled = snipe_enabled
             session.commit()
             return guild
     except Exception as e:

@@ -34,6 +34,7 @@ class Guild(Base):
     toggled_channels: Mapped[List[int]] = mapped_column(default=[])
     ignored_bots: Mapped[List[int]] = mapped_column(default=[])
     image_snipe: Mapped[bool] = mapped_column(default=False)
+    snipe_enabled: Mapped[bool] = mapped_column(default=False)
 
     def __repr__(self) -> str:
         return f"Guild(id={self.id!r}, name={self.id!r}, delete_delay={self.delete_delay!r})"
