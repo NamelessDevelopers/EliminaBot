@@ -98,8 +98,10 @@ async def update_guild(
     guild_id: int,
     guild_name: Optional[str],
     delete_delay: Optional[int],
-    toggled_channel: Optional[int],
+    enabled_channel: Optional[int],
+    disabled_channel: Optional[int],
     ignored_bot: Optional[int],
+    unignored_bot: Optional[int],
     image_snipe: Optional[bool],
 ) -> Optional[Guild]:
     """
@@ -113,10 +115,14 @@ async def update_guild(
             An optional `name` to be updated.
         delete_delay : Optional[int]
             An optional `delete_delay` to be updated.
-        toggled_channel : Optional[int]
+        enabled_channel : Optional[int]
             An optional channel id to be appended to `toggled_channels`.
+        disabled_channel : Optional[int]
+            An optional channel id to be removed from `toggled_channels`.
         ignored_bot : Optional[int]
             An optional bot id to be appended to `ignored_bots`.
+        unignored_bot : Optional[int]
+            An optional bot id to be removed from `ignored_bots`.
         image_snipe : Optional[bool]
             An optional boolean value to update `image_snipe`.
     Returns
@@ -133,10 +139,14 @@ async def update_guild(
                 guild.name = guild_name
             if delete_delay:
                 guild.delete_delay = delete_delay
-            if toggled_channel:
-                guild.toggled_channels.append(toggled_channel)
+            if enabled_channel:
+                guild.toggled_channels.append(enabled_channel)
+            if disabled_channel:
+                guild.toggled_channels.remove(disabled_channel)
             if ignored_bot:
                 guild.ignored_bots.append(ignored_bot)
+            if unignored_bot:
+                guild.ignored_bots.remove(unignored_bot)
             if image_snipe is not None:
                 guild.image_snipe = image_snipe
             session.commit()
