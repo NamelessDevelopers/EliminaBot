@@ -187,7 +187,7 @@ class EventHandler(commands.Cog):
 
         self.edit_snipe_message[guild_id] = after
 
-    @commands.command(name="snipe")
+    @commands.hybrid_command(name="snipe")
     async def snipe(self, ctx: commands.Context) -> None:
         guild_id = ctx.guild.id
 
@@ -264,7 +264,7 @@ class EventHandler(commands.Cog):
         # reset snipe_message for the guild
         self.snipe_message[guild_id].message = None
 
-    @commands.command(name="editsnipe")
+    @commands.hybrid_command(name="editsnipe")
     async def editsnipe(self, ctx: commands.Context) -> None:
         guild_id = ctx.guild.id
 
@@ -349,7 +349,7 @@ class EventHandler(commands.Cog):
         self.edit_snipe_message[guild_id].message = None
         self.edit_snipe_message[guild_id].edited_message = None
     
-    @commands.command(name="togglesnipe")
+    @commands.hybrid_command(name="togglesnipe")
     @commands.has_permissions(administrator=True)
     @commands.cooldown(rate=1, per=60, type=commands.BucketType.guild)
     async def togglesnipe(self, ctx: commands.Context) -> None:

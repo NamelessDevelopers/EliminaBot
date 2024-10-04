@@ -12,7 +12,7 @@ class Mod(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
-    @commands.command(name="purge", aliases=["prune", "clean", "clear"])
+    @commands.hybrid_command(name="purge", aliases=["prune", "clean", "clear"])
     async def purge(self, ctx: commands.Context, count: int = 300) -> None:
 
         has_moderation = False

@@ -16,7 +16,7 @@ class Admin(commands.Cog):
         self.bot = bot
         self.bot_id = bot.user.id
 
-    @commands.command(name="toggle", aliases=["enable", "disable"])
+    @commands.hybrid_command(name="toggle", aliases=["enable", "disable"])
     @commands.has_permissions(administrator=True)
     @commands.cooldown(rate=1, per=60, type=commands.BucketType.guild)
     async def toggle(self, ctx: commands.Context) -> None:
@@ -41,7 +41,7 @@ class Admin(commands.Cog):
         )
         await ctx.send(embed=activate_embed)
 
-    @commands.command(name="timer", aliases=["wait", "delay"])
+    @commands.hybrid_command(name="timer", aliases=["wait", "delay"])
     @commands.has_permissions(administrator=True)
     @commands.cooldown(rate=1, per=60, type=commands.BucketType.guild)
     async def timer(self, ctx: commands.Context, time: int) -> None:
@@ -58,7 +58,7 @@ class Admin(commands.Cog):
         )
         await ctx.send(embed=time_changed_embed)
 
-    @commands.command(name="imgsnipe", aliases=["imagesnipe", "image"])
+    @commands.hybrid_command(name="imgsnipe", aliases=["imagesnipe", "image"])
     @commands.has_permissions(administrator=True)
     @commands.cooldown(rate=1, per=60, type=commands.BucketType.guild)
     async def imgsnipe(self, ctx: commands.Context) -> None:
@@ -79,7 +79,7 @@ class Admin(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(name="ignore", aliases=["unignore", "whitelist"])
+    @commands.hybrid_command(name="ignore", aliases=["unignore", "whitelist"])
     @commands.has_permissions(administrator=True)
     @commands.cooldown(rate=1, per=60, type=commands.BucketType.guild)
     async def ignore(self, ctx: commands.Context, bot: discord.User) -> None:

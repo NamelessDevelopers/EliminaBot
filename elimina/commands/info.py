@@ -15,7 +15,7 @@ class Info(commands.Cog):
         self.bot = bot
         self.bot_id = bot.user.id
 
-    @commands.command(name="help")
+    @commands.hybrid_command(name="help")
     async def _help(self, ctx: commands.Context) -> None:
         help_embed = Embed(title="**Commands**", colour=COLORS["accent"])
 
@@ -78,7 +78,7 @@ class Info(commands.Cog):
         help_embed.set_footer(text="Requested by: " + ctx.message.author.name)
         await ctx.send(embed=help_embed)
 
-    @commands.command(name="info", aliases=["about", "information"])
+    @commands.hybrid_command(name="info", aliases=["about", "information"])
     async def info(self, ctx: commands.Context) -> None:
         info_embed = discord.Embed(
             title="Server Setup Information",
@@ -140,14 +140,20 @@ class Info(commands.Cog):
             )
 
         info_embed.add_field(
+            name="Sniping",
+            value="enabled" if guild.snipe_enabled else "disabled",
+            inline=True,
+        )
+
+        info_embed.add_field(
             name="Image Snipe: ",
             value="enabled" if guild.image_snipe else "disabled",
             inline=True,
         )
 
         info_embed.add_field(
-            name="Timer set at: __" + str(guild.delete_delay) + " seconds__",
-            value="\u200b",
+            name="Timer set at:",
+            value=f"__{guild.delete_delay} seconds__",
             inline=True,
         )
 
@@ -164,7 +170,7 @@ class Info(commands.Cog):
         )
         await ctx.send(embed=info_embed)
 
-    @commands.command(name="invite")
+    @commands.hybrid_command(name="invite")
     async def invite(self, ctx: commands.Context) -> None:
         embed_invite = discord.Embed(
             title="Click here to invite me",
@@ -179,7 +185,7 @@ class Info(commands.Cog):
         embed_invite.set_footer(text=f"\nFor help contact {config.SUPPORT_EMAIL}")
         await ctx.send(embed=embed_invite)
 
-    @commands.command(name="vote")
+    @commands.hybrid_command(name="vote")
     async def vote(self, ctx: commands.Context) -> None:
         vote_embed = discord.Embed(
             title="Click here to vote for me",
