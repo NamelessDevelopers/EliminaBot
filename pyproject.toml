@@ -1,0 +1,17 @@
+[project]
+name = "elimina"
+version = "0.1.0"
+description = "A discord bot to remove unnecessary bot spam."
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "discord>=2.3.2",
+    "sqlalchemy>=2.0.35",
+    "alembic>=1.13.3",
+    "pydantic>=2.9.2",
+    "pydantic-settings>=2.5.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
