@@ -10,6 +10,7 @@ dependencies = [
     "alembic>=1.13.3",
     "pydantic>=2.9.2",
     "pydantic-settings>=2.5.2",
+    "cachetools>=5.5.0",
 ]
 
 [build-system]
