@@ -5,7 +5,12 @@ from elimina import LOGGER
 from elimina.db.guild import get_guild, get_whitelists
 
 
-class Events(commands.Cog):
+class EventHandler(commands.Cog):
+    """
+    The EventHandler Class.
+
+    Handles `on_ready` and `on_message` events - the core functionality of Elimina.
+    """
 
     __cog_name__ = "Event Handler"
 
@@ -15,11 +20,11 @@ class Events(commands.Cog):
 
     @commands.Cog.listener("ready")
     async def on_ready(self):
-        presenceActivity = discord.Game(
+        presence_activity = discord.Game(
             f"~help | watching {len(self.bot.guilds)} servers"
         )
         await self.bot.change_presence(
-            status=discord.Status.online, activity=presenceActivity
+            status=discord.Status.online, activity=presence_activity
         )
         print(f"Logged in as {self.bot}")
 
@@ -63,5 +68,5 @@ class Events(commands.Cog):
 
 
 def setup(bot: commands.Bot) -> None:
-    bot.add_cog(Events(bot))
-    LOGGER.info("Cog Loaded: ", Events.__cog_name__)
+    bot.add_cog(EventHandler(bot))
+    LOGGER.info("Cog Loaded: ", EventHandler.__cog_name__)
