@@ -56,7 +56,6 @@ class EventHandler(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
-        LOGGER.info(f"new message {message.content}")
         # add poll reactions if message starts with "poll:"
         if not message.author.bot and message.content.strip().startswith("poll: "):
             await message.add_reaction(config.POLL_EMOTE_YES)
