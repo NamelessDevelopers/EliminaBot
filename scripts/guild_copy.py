@@ -1,23 +1,12 @@
 import json
 from typing import List
 
-from sqlalchemy import Column, String, Table
-from sqlalchemy.dialects.sqlite import JSON
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import JSON, String
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from elimina.entities.base import Base
 
-guild_table = Table(
-    "guild",
-    Base.metadata,
-    Column("id", primary_key=True),
-    Column("name"),
-    Column("delete_delay", default=True),
-    Column("toggled_channels", default=json.dumps([])),
-    Column("ignored_bots", default=json.dumps([])),
-    Column("image_snipe", default=False),
-    Column("snipe_enabled", default=False),
-)
+class Base(DeclarativeBase):
+    pass
 
 
 class Guild(Base):

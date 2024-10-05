@@ -70,10 +70,7 @@ async def get_guild(id: Optional[int]) -> Optional[List[Guild]]:
         return None
 
 
-async def create_guild(
-    guild_id: int,
-    guild_name: str,
-) -> None:
+async def create_guild(guild_id: int, guild_name: str, **kwargs) -> None:
     """
     Function to create a new Guild in the database.
 
@@ -93,10 +90,7 @@ async def create_guild(
             guild = await get_guild(guild_id)
             if guild:
                 raise PrimaryKeyViolationError()
-            guild = Guild(
-                id=guild_id,
-                name=guild_name,
-            )
+            guild = Guild(id=guild_id, name=guild_name, **kwargs)
             session.add(guild)
             session.flush()
             session.commit()
