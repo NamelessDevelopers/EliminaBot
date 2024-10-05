@@ -10,7 +10,7 @@ from elimina.exceptions.elimina_exceptions import TimeValueError
 
 class Admin(commands.Cog):
 
-    __cog_name__ = "Admin"
+    __cog_name__: str = "Admin"
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -121,6 +121,6 @@ class Admin(commands.Cog):
             await ctx.send(embed=ignore_embed)
 
 
-def setup(bot: commands.Bot) -> None:
-    bot.add_cog(Admin(bot))
-    LOGGER.info("Cog Loaded: ", Admin.__cog_name__)
+async def setup(bot: commands.Bot) -> None:
+    await bot.add_cog(Admin(bot))
+    LOGGER.info(f"Cog Loaded: {Admin.__cog_name__}")

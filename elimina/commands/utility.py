@@ -10,7 +10,7 @@ from elimina.constants import COLORS
 
 class Utility(commands.Cog):
 
-    __cog_name__ = "Util"
+    __cog_name__: str = "Util"
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -78,6 +78,6 @@ class Utility(commands.Cog):
         await tempChannel.delete(reason="disconnected")
 
 
-def setup(bot: commands.Bot) -> None:
-    bot.add_cog(Utility(bot))
-    LOGGER.info("Cog Loaded: ", Utility.__cog_name__)
+async def setup(bot: commands.Bot) -> None:
+    await bot.add_cog(Utility(bot))
+    LOGGER.info(f"Cog Loaded: {Utility.__cog_name__}")

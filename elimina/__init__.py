@@ -1,14 +1,14 @@
 import logging
 
 import discord
-from discord.ext import commands
 
+from elimina.bot import Elimina
 from elimina.config import Config
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 handler = logging.StreamHandler()
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+formatter = discord.utils._ColourFormatter()
 handler.setFormatter(formatter)
 
 LOGGER.addHandler(handler)
@@ -19,12 +19,11 @@ LOGGER.info("Logger initialized.")
 
 config = Config()
 
-client = commands.Bot(
-    command_prefix="~",
-    intents=discord.Intents(53608189),  # default intents + message content
+client = Elimina(
+    command_prefix=config.BOT_PREFIX,
+    intents=discord.Intents().all(),  # default intents + message content
     status="Online",
     case_insensitive=True,
+    shards=32,
+    help_command=None,
 )
-
-client.remove_command("timer")
-client.remove_command("help")

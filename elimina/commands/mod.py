@@ -7,7 +7,7 @@ from elimina.constants import COLORS, SUPER_USERS
 
 class Mod(commands.Cog):
 
-    __cog_name__ = "Mod"
+    __cog_name__: str = "Mod"
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -60,6 +60,6 @@ class Mod(commands.Cog):
         await msg.delete(delay=4)
 
 
-def setup(bot: commands.Bot) -> None:
-    bot.add_cog(Mod(bot))
-    LOGGER.info("Cog Loaded: ", Mod.__cog_name__)
+async def setup(bot: commands.Bot) -> None:
+    await bot.add_cog(Mod(bot))
+    LOGGER.info(f"Cog Loaded: {Mod.__cog_name__}")

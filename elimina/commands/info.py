@@ -9,7 +9,7 @@ from elimina.db.guild import get_guild, get_whitelists
 
 class Info(commands.Cog):
 
-    __cog_name__ = "Info"
+    __cog_name__: str = "Info"
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -71,9 +71,9 @@ class Info(commands.Cog):
             inline=False,
         )
         help_embed.set_author(
-            name="Elimina Bot",
+            name=self.bot.user.display_name,
             url=config.GITHUB_URL,
-            icon_url=self.bot.user.avatar_url,
+            icon_url=self.bot.user.display_avatar.url,
         )
         help_embed.set_footer(text="Requested by: " + ctx.message.author.name)
         await ctx.send(embed=help_embed)
@@ -108,7 +108,7 @@ class Info(commands.Cog):
         info_embed.set_author(
             name="Elimina Bot",
             url=config.GITHUB_URL,
-            icon_url=self.bot.user.avatar_url,
+            icon_url=self.bot.user.display_avatar.url,
         )
 
         bot_str = " ".join(
@@ -201,6 +201,6 @@ class Info(commands.Cog):
         return await ctx.send(embed=vote_embed)
 
 
-def setup(bot: commands.Bot) -> None:
-    bot.add_cog(Info(bot))
-    LOGGER.info("Cog Loaded: ", Info.__cog_name__)
+async def setup(bot: commands.Bot) -> None:
+    await bot.add_cog(Info(bot))
+    LOGGER.info(f"Cog Loaded: {Info.__cog_name__}")

@@ -36,7 +36,7 @@ class EventHandler(commands.Cog):
             The event triggered whenever the bot is removed from a guild.
     """
 
-    __cog_name__ = "Event Handler"
+    __cog_name__: str = "Event Handler"
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -44,7 +44,7 @@ class EventHandler(commands.Cog):
         self.snipe_message: Dict[int, Snipe] = defaultdict(int)
         self.edit_snipe_message: Dict[int, EditSnipe] = defaultdict(int)
 
-    @commands.Cog.listener("ready")
+    @commands.Cog.listener()
     async def on_ready(self):
         presence_activity = discord.Game(
             f"~help | watching {len(self.bot.guilds)} servers"
@@ -52,12 +52,13 @@ class EventHandler(commands.Cog):
         await self.bot.change_presence(
             status=discord.Status.online, activity=presence_activity
         )
-        print(f"Logged in as {self.bot}")
+        LOGGER.info(f"Logged in as {self.bot.user.display_name}")
 
-    @commands.Cog.listener("Message")
+    @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
+        LOGGER.info(f"new message {message.content}")
         # add poll reactions if message starts with "poll:"
-        if not message.author.bot and message.content.startswith("poll: "):
+        if not message.author.bot and message.content.strip().startswith("poll: "):
             await message.add_reaction(config.POLL_EMOTE_YES)
             await message.add_reaction(config.POLL_EMOTE_NO)
             await message.add_reaction(config.POLL_EMOTE_MAYBE)
@@ -99,8 +100,9 @@ class EventHandler(commands.Cog):
             delete_delay = guild[0].delete_delay
             await message.delete(delay=delete_delay)
 
-    @commands.Cog.listener("Guild Join")
+    @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild) -> None:
+        LOGGER.info(f"guild joined {guild.name}")
 
         guild_id = guild.id
 
@@ -118,11 +120,11 @@ class EventHandler(commands.Cog):
             colour=COLORS["green"],
         )
         embed_join.set_footer(text="Total Number of Servers: " + str(len(guilds)))
-        await self.bot.get_guild(777063033301106728).get_channel(
-            779045674557767680
+        await self.bot.get_guild(config.SUPPORT_SERVER_ID).get_channel(
+            config.JOIN_LEAVE_CHANNEL
         ).send(embed=embed_join)
 
-    @commands.Cog.listener("Guild Remove")
+    @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild) -> None:
 
         guild_id = guild.id
@@ -149,7 +151,7 @@ class EventHandler(commands.Cog):
             779045674557767680
         ).send(embed=embed_leave)
 
-    @commands.Cog.listener("Message Delete")
+    @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message) -> None:
         guild_id = message.guild.id
 
@@ -167,7 +169,7 @@ class EventHandler(commands.Cog):
 
         self.snipe_message[guild_id] = message
 
-    @commands.Cog.listener("Message Edit")
+    @commands.Cog.listener()
     async def on_message_edit(
         self, before: discord.Message, after: discord.Message
     ) -> None:
@@ -379,6 +381,6 @@ class EventHandler(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot: commands.Bot) -> None:
-    bot.add_cog(EventHandler(bot))
-    LOGGER.info("Cog Loaded: ", EventHandler.__cog_name__)
+async def setup(bot: commands.Bot) -> None:
+    await bot.add_cog(EventHandler(bot))
+    LOGGER.info(f"Cog Loaded: {EventHandler.__cog_name__}")

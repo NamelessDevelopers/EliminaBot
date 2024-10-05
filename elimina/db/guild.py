@@ -1,3 +1,4 @@
+import json
 from typing import Dict, List, Optional, Set
 
 import cachetools
@@ -22,6 +23,8 @@ async def get_whitelists() -> Optional[Dict[int, Dict[str, Set[int]]]]:
             if not result:
                 raise EntityNotFoundError()
             for _id, channels, bots in result:
+                channels = json.loads(channels)
+                bots = json.loads(bots)
                 if _id not in m:
                     m[_id] = {}
                 m[_id]["channels"] = set(channels)
@@ -29,8 +32,17 @@ async def get_whitelists() -> Optional[Dict[int, Dict[str, Set[int]]]]:
             return m
 
     except Exception as e:
-        LOGGER.exception("Failed to get whitelists due to: ", e)
+        LOGGER.exception(f"Failed to get whitelists due to: {e}")
         return None
+
+
+async def transform_lists(guilds: List[Guild]) -> List[Guild]:
+    for i, guild in enumerate(guilds):
+        channels = json.loads(guild.toggled_channels)
+        bots = json.loads(guild.toggled_channels)
+        guilds[i].toggled_channels = channels
+        guilds[i].ignored_bots = bots
+    return guilds
 
 
 async def get_guild(id: Optional[int]) -> Optional[List[Guild]]:
@@ -48,20 +60,20 @@ async def get_guild(id: Optional[int]) -> Optional[List[Guild]]:
     """
     try:
         with Session(engine) as session:
-            return (
+            return await transform_lists(
                 session.query(Guild).filter(Guild.id == id).all()
                 if id
                 else session.query().all()
             )
     except Exception as e:
-        LOGGER.exception("Error getting guild: ", e)
+        LOGGER.exception(f"Error getting guild: {e}")
         return None
 
 
 async def create_guild(
     guild_id: int,
     guild_name: str,
-) -> Optional[Guild]:
+) -> None:
     """
     Function to create a new Guild in the database.
 
@@ -78,20 +90,18 @@ async def create_guild(
     """
     try:
         with Session(engine) as session:
-            guild = get_guild(guild_id)
+            guild = await get_guild(guild_id)
             if guild:
                 raise PrimaryKeyViolationError()
             guild = Guild(
-                guild_id,
-                guild_name,
+                id=guild_id,
+                name=guild_name,
             )
-            session.add(Guild)
+            session.add(guild)
             session.flush()
             session.commit()
-            return guild
     except Exception as e:
-        LOGGER.exception("Error creating guild: ", e)
-        return None
+        LOGGER.exception(f"Error creating guild: {e}")
 
 
 async def update_guild(
@@ -143,13 +153,13 @@ async def update_guild(
             if delete_delay:
                 guild.delete_delay = delete_delay
             if enabled_channel:
-                guild.toggled_channels.append(enabled_channel)
+                json.dumps(json.loads(guild.toggled_channels).append(enabled_channel))
             if disabled_channel:
-                guild.toggled_channels.remove(disabled_channel)
+                json.dumps(json.loads(guild.toggled_channels).remove(disabled_channel))
             if ignored_bot:
-                guild.ignored_bots.append(ignored_bot)
+                json.dumps(json.loads(guild.ignored_bots).append(ignored_bot))
             if unignored_bot:
-                guild.ignored_bots.remove(unignored_bot)
+                json.dumps(json.loads(guild.ignored_bots).remove(unignored_bot))
             if image_snipe is not None:
                 guild.image_snipe = image_snipe
             if snipe_enabled is not None:
@@ -157,7 +167,7 @@ async def update_guild(
             session.commit()
             return guild
     except Exception as e:
-        LOGGER.exception("Error updating guild: ", e)
+        LOGGER.exception(f"Error updating guild: {e}")
         return None
 
 
@@ -175,8 +185,8 @@ async def delete_guild(guild_id: int) -> None:
             guild: Guild | None = session.query(Guild).get(guild_id)
             if not guild:
                 raise EntityNotFoundError()
-            session.delete(Guild)
+            session.delete(guild)
             session.flush()
             session.commit()
     except Exception as e:
-        LOGGER.exception("Error deleting guild: ", e)
+        LOGGER.exception(f"Error deleting guild: {e}")

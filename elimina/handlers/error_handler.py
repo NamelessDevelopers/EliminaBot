@@ -15,7 +15,7 @@ class ErrorHandler(commands.Cog):
     Class to handle various errors from `discord.ext.commands` and custom errors.
     """
 
-    __cog_name__ = "Error Handler"
+    __cog_name__: str = "Error Handler"
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -57,6 +57,6 @@ class ErrorHandler(commands.Cog):
             LOGGER.exception(error)
 
 
-def setup(bot: commands.Bot) -> None:
-    bot.add_cog(ErrorHandler(bot))
-    LOGGER.info("Cog Loaded: ", ErrorHandler.__cog_name__)
+async def setup(bot: commands.Bot) -> None:
+    await bot.add_cog(ErrorHandler(bot))
+    LOGGER.info(f"Cog Loaded: {ErrorHandler.__cog_name__}")
