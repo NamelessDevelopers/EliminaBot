@@ -10,20 +10,19 @@ Elimina is a Discord bot designed to assist moderators by automatically deleting
 
 ## 3. Usage Restrictions
 
-   - You must follow Discord's Terms of Service and Community Guidelines while using Elimina.
-   - The Bot is provided for use within Discord servers only. Unauthorized use outside of Discord is prohibited.
-   - Do not attempt to exploit, hack, or misuse the Bot.
+- You must follow Discord's Terms of Service and Community Guidelines while using Elimina.
+- The Bot is provided for use within Discord servers only. Unauthorized use outside of Discord is prohibited.
+- Do not attempt to exploit, hack, or misuse the Bot.
 
 ## 4. Data Collection and Usage
 
-   - The Bot stores only the Guild ID and Channel IDs where it is enabled.
-   - All data is stored is encrypted.
-   - These IDs are stored to ensure the Bot functions correctly within your server.
-   - No other data is collected or stored.
+- The Bot stores only the Guild ID and Channel IDs where it is enabled.
+- These IDs are stored to ensure the Bot functions correctly within your server.
+- No other data is collected or stored.
 
 ## 5. Data Deletion
 
-   - All stored Guild ID and Channel IDs will be automatically deleted when the Bot is disabled or removed from your server.
+- All stored Guild ID and Channel IDs will be automatically deleted when the Bot is disabled or removed from your server.
 
 ## 6. Modifications to the Service
 
