@@ -123,6 +123,13 @@ class EventHandler(commands.Cog):
         await self.bot.get_guild(config.SUPPORT_SERVER_ID).get_channel(
             config.JOIN_LEAVE_CHANNEL
         ).send(embed=embed_join)
+    
+    @commands.Cog.listener()
+    async def on_guild_update(self, before: discord.Guild, after: discord.Guild) -> None:
+        if before.name == after.name:
+            return
+        guild_id = before.guild.id
+        await update_guild(guild_id, guild_name=after.name)
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild) -> None:
