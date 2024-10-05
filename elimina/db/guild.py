@@ -63,7 +63,7 @@ async def get_guild(id: Optional[int]) -> Optional[List[Guild]]:
             return await transform_lists(
                 session.query(Guild).filter(Guild.id == id).all()
                 if id
-                else session.query().all()
+                else session.query(Guild).all()
             )
     except Exception as e:
         LOGGER.exception(f"Error getting guild: {e}")
@@ -139,7 +139,7 @@ async def update_guild(
     """
     try:
         with Session(engine) as session:
-            guild: Guild | None = session.query(Guild).get(guild_id)
+            guild: Guild | None = session.get(Guild, {"id": guild_id})
             if not guild:
                 raise EntityNotFoundError()
             if guild_name:
@@ -176,7 +176,7 @@ async def delete_guild(guild_id: int) -> None:
     """
     try:
         with Session(engine) as session:
-            guild: Guild | None = session.query(Guild).get(guild_id)
+            guild: Guild | None = session.get(Guild, {"id": guild_id})
             if not guild:
                 raise EntityNotFoundError()
             session.delete(guild)
