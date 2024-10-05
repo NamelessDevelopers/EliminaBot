@@ -5,7 +5,7 @@ from elimina import LOGGER
 
 class Owner(commands.Cog):
 
-    __cog_name_: str = "Owner"
+    __cog_name__: str = "Owner"
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -22,4 +22,4 @@ class Owner(commands.Cog):
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Owner(bot))
-    LOGGER.info(f"Cog Loaded: {Owner.__cog_name_}")
+    LOGGER.info(f"Cog Loaded: {Owner.__cog_name__}")
