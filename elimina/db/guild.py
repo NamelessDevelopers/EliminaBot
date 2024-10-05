@@ -100,14 +100,14 @@ async def create_guild(guild_id: int, guild_name: str, **kwargs) -> None:
 
 async def update_guild(
     guild_id: int,
-    guild_name: Optional[str],
-    delete_delay: Optional[int],
-    enabled_channel: Optional[int],
-    disabled_channel: Optional[int],
-    ignored_bot: Optional[int],
-    unignored_bot: Optional[int],
-    image_snipe: Optional[bool],
-    snipe_enabled: Optional[bool],
+    guild_name: Optional[str] = None,
+    delete_delay: Optional[int] = None,
+    enabled_channel: Optional[int] = None,
+    disabled_channel: Optional[int] = None,
+    ignored_bot: Optional[int] = None,
+    unignored_bot: Optional[int] = None,
+    image_snipe: Optional[bool] = None,
+    snipe_enabled: Optional[bool] = None,
 ) -> Optional[Guild]:
     """
     Function to update a Guild in the database.
