@@ -17,6 +17,7 @@ class Utility(commands.Cog):
         self.bot_id = bot.user.id
 
     @commands.command(name="dctimer", aliases=["disconnect", "dc"])
+    @commands.guild_only()
     @commands.bot_has_guild_permissions(manage_channels=True, move_members=True)
     async def dctimer(
         self, ctx: commands.Context, time: str

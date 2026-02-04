@@ -79,6 +79,7 @@ class Info(commands.Cog):
         await ctx.send(embed=help_embed)
 
     @commands.hybrid_command(name="info", aliases=["about", "information"])
+    @commands.guild_only()
     async def info(self, ctx: commands.Context) -> None:
         info_embed = discord.Embed(
             title="Server Setup Information",
