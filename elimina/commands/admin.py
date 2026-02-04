@@ -78,7 +78,7 @@ class Admin(commands.Cog):
         embed = Embed(
             title=None,
             color=COLORS["green"] if not image_snipe else COLORS["red"],
-            description=f"✅ Successfully {"enabled"  if not image_snipe else "disabled"} image snipe!",
+            description=f"✅ Successfully {'enabled' if not image_snipe else 'disabled'} image snipe!",
         )
         await ctx.send(embed=embed)
 
@@ -101,7 +101,7 @@ class Admin(commands.Cog):
             error_embed = Embed(
                 title=None, color=COLORS["red"], description="❌ You can't ignore me."
             )
-            await ctx.send(embed=error_embed)
+            return await ctx.send(embed=error_embed)
 
         whitelist = await get_whitelists()
 
