@@ -22,6 +22,9 @@ class ErrorHandler(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error: Any) -> None:
+        if isinstance(error, commands.NoPrivateMessage):
+            return
+
         if isinstance(error, commands.BotMissingPermissions):
             perm_error_embed = Embed(
                 title=None,
@@ -31,11 +34,10 @@ class ErrorHandler(commands.Cog):
             return await ctx.send(embed=perm_error_embed)
 
         if isinstance(error, commands.CommandOnCooldown):
-            command = self.bot.get_command(ctx.command.name)
             cooldown_error_embed = Embed(
                 title=None,
                 color=COLORS["red"],
-                description=f"❌ That command is on cooldown for {command.get_cooldown_retry_after(ctx)} seconds.",
+                description=f"❌ That command is on cooldown for {error.retry_after:.1f} seconds.",
             )
             return await ctx.send(embed=cooldown_error_embed)
 
