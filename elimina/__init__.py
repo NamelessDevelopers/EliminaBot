@@ -20,12 +20,14 @@ LOGGER.info("Logger initialized.")
 
 config = Config()
 
+intents = discord.Intents.default()
+intents.message_content = True
+
 client = Elimina(
     command_prefix=config.BOT_PREFIX,
-    intents=discord.Intents(53608189),  # default intents + message content
+    intents=intents,
     status="Online",
     case_insensitive=True,
-    shards=32,
     help_command=None,
 )
 
