@@ -26,10 +26,20 @@ class ErrorHandler(commands.Cog):
             return
 
         if isinstance(error, commands.BotMissingPermissions):
+            missing = ", ".join(error.missing_permissions)
             perm_error_embed = Embed(
                 title=None,
                 color=COLORS["red"],
-                description="❌ Looks like I'm missing `manage channels` and/or `move members` permissions.",
+                description=f"❌ I'm missing permissions: `{missing}`",
+            )
+            return await ctx.send(embed=perm_error_embed)
+
+        if isinstance(error, commands.MissingPermissions):
+            missing = ", ".join(error.missing_permissions)
+            perm_error_embed = Embed(
+                title=None,
+                color=COLORS["red"],
+                description=f"❌ You need: `{missing}` to use this command.",
             )
             return await ctx.send(embed=perm_error_embed)
 
