@@ -2,7 +2,7 @@ from discord import Embed, HTTPException
 from discord.ext import commands
 
 from elimina import LOGGER
-from elimina.constants import COLORS, SUPER_USERS
+from elimina.constants import COLORS
 
 
 class Mod(commands.Cog):
@@ -14,18 +14,8 @@ class Mod(commands.Cog):
 
     @commands.hybrid_command(name="purge", aliases=["prune", "clean", "clear"])
     @commands.guild_only()
+    @commands.has_permissions(manage_messages=True)
     async def purge(self, ctx: commands.Context, count: int = 300) -> None:
-
-        has_moderation = False
-        for role in ctx.author.roles:
-            if role.name.lower() == "moderation":
-                has_moderation = True
-        manage_messages = ctx.author.guild_permissions.manage_messages
-        super_user = ctx.author.id in SUPER_USERS
-
-        if not (super_user or manage_messages or has_moderation):
-            return
-
         try:
             msgs = await ctx.channel.purge(
                 limit=count + 1,
@@ -39,7 +29,7 @@ class Mod(commands.Cog):
                 color=COLORS["red"],
                 description="❌ Unable to delete messages older than 14 days.",
             )
-            await ctx.send(embed=error_embed)
+            return await ctx.send(embed=error_embed)
 
         msg = None
 
