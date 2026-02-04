@@ -1,57 +1,106 @@
-# ELIMINA DISCORD BOT
+# Elimina Discord Bot
 
----
+A Discord bot that automatically deletes messages from bots after a configurable delay in selected channels. Also features message sniping, purge, polls, and a voice disconnect timer.
 
-## ![Elimina Logo](https://github.com/NamelessDevelopers/EliminaBot/blob/master/public/logoBlackEmojiSize.png "Elimina Logo") About
+## Features
 
-Elimina is a discord bot that can automatically delete messages from bots after an X number of seconds (set by an administrator) in selected (toggled on) channels.
+- **Auto-delete bot messages** in toggled channels after X seconds (1–300s, default 5s)
+- **Snipe** — view the most recently deleted message (per-channel, 60s TTL)
+- **EditSnipe** — view the most recently edited message (per-channel, 60s TTL)
+- **Purge** — bulk delete bot messages
+- **Ignore list** — whitelist specific bots from auto-deletion
+- **DC Timer** — auto-disconnect from voice after a set time
+- **Polls** — quick reaction polls via `poll: <question>`
 
-Elimina can also show you the most recently deleted message. It will show you the most recently deleted message, or image using the `~snipe` command. To use the snipe command, you must have either administrator permissions, or have a role called Sniper. We made the snipe feature like this because we believe that only the selected people should have the ability to snipe messages.
+Elimina's own messages are auto-deleted after 1 minute in toggled channels.
 
-**_Please keep in mind that the bot has to have access to read the channel inoroder to work._**
+## Commands
 
-**_All messages from Elimina are deleted after 1 minute in toggled on channels_**
+| Command | Permission | Description |
+|---|---|---|
+| `~help` | Everyone | Show all commands |
+| `~info` | Everyone | Show server setup (toggled channels, ignored bots, timer) |
+| `~invite` | Everyone | Get bot invite link |
+| `~vote` | Everyone | Vote on Top.gg |
+| `~toggle` | Admin | Activate/deactivate auto-delete in current channel |
+| `~timer <seconds>` | Admin | Set delete delay (1–300s) |
+| `~ignore <@bot>` | Admin | Add/remove bot from whitelist |
+| `~imgsnipe` | Admin | Toggle image sniping |
+| `~togglesnipe` | Admin | Enable/disable snipe feature |
+| `~snipe` | Admin/Sniper | View last deleted message in this channel |
+| `~editsnipe` | Admin/Sniper | View last edited message in this channel |
+| `~purge [count]` | Manage Messages | Delete bot messages (default: 300) |
+| `~dctimer <time>` | Everyone | Auto-disconnect from voice (e.g. `30s`, `5m`, `1h`) |
 
----
+## Setup
 
-## ![Elimina Logo](https://github.com/NamelessDevelopers/EliminaBot/blob/master/public/logoPurple.png "Elimina Logo") Invite
+### Requirements
 
-The bot can be invited by following [this link.](https://discord.com/api/oauth2/authorize?client_id=777575449957498890&permissions=17918992&scope=bot "Discord direct invite link")
+- Python 3.10+
+- A Discord bot token with **Message Content Intent** enabled
 
-## ![Elimina Logo](https://github.com/NamelessDevelopers/EliminaBot/blob/master/public/logoPurple.png "Elimina Logo") Support Server
+### Installation
 
-Here is the [Support Server](https://discord.gg/vFmFTjPpZ4 "Support Server Invite link") invite link.
+```bash
+# clone
+git clone https://github.com/namelessdevelopers/eliminabot.git
+cd eliminabot
 
----
+# create venv
+python3 -m venv .venv
+source .venv/bin/activate
 
-## ![Elimina Logo](https://github.com/NamelessDevelopers/EliminaBot/blob/master/public/logoBlackEmojiSize.png "Elimina Logo") All Commands
+# install
+pip install -e .
+```
 
-### **Commands:**
+### Configuration
 
-`~info`:To see information about Elimina and how Elimina is set up in your server. This command will let you view toggled on channels, and ignored bots.
+Copy `.env.example` to `.env` and fill in your values:
 
-`~invite` : To invite Elimina to your server
+```env
+BOT_TOKEN=your_bot_token
+DB_URI=sqlite+aiosqlite:///elimina.sqlite3
+SUPPORT_EMAIL=your@email.com
+SUPPORT_SERVER_INVITE=https://discord.gg/your_invite
+SUPPORT_SERVER_ID=your_server_id
+JOIN_LEAVE_CHANNEL=your_channel_id
+BOT_PREFIX="~"
+GITHUB_URL=https://github.com/namelessdevelopers/eliminabot
+TOP_GG_ID=your_bot_id
+POLL_EMOTE_YES=emote_name:emote_id
+POLL_EMOTE_NO=emote_name:emote_id
+POLL_EMOTE_MAYBE=emote_name:emote_id
+```
 
-`~help`: To see a list of commands
+### Running
 
-`~editsnipe` : To show the last message edited by a user within a minute on the same channel.
+```bash
+source .venv/bin/activate
+python -m elimina
+```
 
-### **Commands below require special permissions**
+### Database Migrations
 
-`~purge <optional: number of messages>`: deletes a default of 20 messages sent by bots, or an x number of messages sent by the command. **_Requires manage message permissions._**
+```bash
+alembic upgrade head
+```
 
-`~toggle`: Activates a channel to have bot messages deleted after x number of seconds. **_Requires administrator permissions._**
+## Tech Stack
 
-`~timer <number of seconds>`: To change the time of the messages being deleted. Default is 5 seconds, meaning that messages from bots are deleted after 5 seconds in toggled on channels. Min time is 1 second, and max is 300 seconds (5 mintues). **_Requires administrator permissions._**
+- **discord.py** 2.x (hybrid commands + slash commands)
+- **SQLAlchemy** 2.x (async via aiosqlite)
+- **Pydantic** for config validation
+- **Alembic** for database migrations
+- **SQLite** (async via aiosqlite)
 
-`~ignore <@bot>`: Add or remove bots from the Server's white list. Messages sent by white-listed bots will not be deleted by Elimina. This is useful if you have a welcome bot. **_Requires administrator permissions._**
+## Authors
 
-`~snipe`: View the most recently deleted text, or image message. **_Requires administrator permissions or a role called Sniper._**
+- [ayamdobhal](https://github.com/AyamDobhal)
+- [hyppytyynytyydytys](https://github.com/hyppytyynytyydytys)
+- [moizmoizmoizmoiz](https://github.com/moizmoizmoizmoiz)
 
-`~imgsnipe`: To enable/disable sniping of images using the `snipe` command. **_Requires administrator permissions._**
+## Links
 
----
-
-### End
-
----
+- [Invite Elimina](https://discord.com/api/oauth2/authorize?client_id=777575449957498890&permissions=17918992&scope=bot)
+- [Support Server](https://discord.gg/vFmFTjPpZ4)
