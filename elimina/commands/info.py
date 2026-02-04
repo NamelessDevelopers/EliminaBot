@@ -33,7 +33,7 @@ class Info(commands.Cog):
         )
         help_embed.add_field(
             name=f"`{config.BOT_PREFIX}timer <time in seconds>` :  __(Admin Only)__",
-            value="  *Change default timer after which the bot messages are deleted. Default: 15 seconds*",
+            value="  *Change default timer after which the bot messages are deleted. Default: 5 seconds*",
         )
         help_embed.add_field(
             name=f"`{config.BOT_PREFIX}purge` <number of messages>[optional]:",
@@ -99,12 +99,16 @@ class Info(commands.Cog):
             return
         guild = guild[0]
 
-        mention_str = "  ".join(
-            [
-                ctx.guild.get_channel(int(channel_id)).mention
-                for channel_id in list(whitelists[guild_id]["channels"])
-            ]
-        )
+        guild_wl = whitelists.get(guild_id, {}) if whitelists else {}
+        channels = guild_wl.get("channels", set())
+        bots = guild_wl.get("bots", set())
+
+        channel_mentions = []
+        for ch_id in channels:
+            ch = ctx.guild.get_channel(int(ch_id))
+            if ch:
+                channel_mentions.append(ch.mention)
+        mention_str = "  ".join(channel_mentions)
 
         info_embed.set_author(
             name="Elimina Bot",
@@ -112,9 +116,7 @@ class Info(commands.Cog):
             icon_url=self.bot.user.display_avatar.url,
         )
 
-        bot_str = " ".join(
-            [f"<@{bot_id}>" for bot_id in list(whitelists[guild_id]["bots"])]
-        )
+        bot_str = " ".join(f"<@{bot_id}>" for bot_id in bots)
 
         if not len(mention_str):
             info_embed.add_field(
@@ -204,4 +206,4 @@ class Info(commands.Cog):
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Info(bot))
-    LOGGER.info(f"Cog Loaded: {Info.__cog_name__}")
+    LOGGER.info("Cog Loaded: %s", Info.__cog_name__)

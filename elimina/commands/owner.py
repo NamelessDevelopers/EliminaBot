@@ -17,9 +17,9 @@ class Owner(commands.Cog):
     async def sync_tree(self, ctx: commands.Context) -> None:
         msg = await ctx.reply("Syncing CommandTree...")
         app_commands = await self.bot.tree.sync()
-        await msg.edit(f"Synced {len(app_commands)} commands with the CommandTree...")
+        await msg.edit(content=f"Synced {len(app_commands)} commands with the CommandTree.")
 
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Owner(bot))
-    LOGGER.info(f"Cog Loaded: {Owner.__cog_name__}")
+    LOGGER.info("Cog Loaded: %s", Owner.__cog_name__)

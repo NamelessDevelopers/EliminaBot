@@ -71,4 +71,4 @@ class ErrorHandler(commands.Cog):
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(ErrorHandler(bot))
-    LOGGER.info(f"Cog Loaded: {ErrorHandler.__cog_name__}")
+    LOGGER.info("Cog Loaded: %s", ErrorHandler.__cog_name__)

@@ -42,7 +42,7 @@ async def get_whitelists() -> Optional[Dict[int, Dict[str, Set[int]]]]:
             return m
 
     except Exception as e:
-        LOGGER.exception(f"Failed to get whitelists due to: {e}")
+        LOGGER.exception("Failed to get whitelists")
         return None
 
 
@@ -79,7 +79,7 @@ async def get_guild(id: Optional[int]) -> Optional[List[Guild]]:
             guilds = list(result.scalars().all())
             return await transform_lists(guilds)
     except Exception as e:
-        LOGGER.exception(f"Error getting guild: {e}")
+        LOGGER.exception("Error getting guild")
         return None
 
 
@@ -109,7 +109,7 @@ async def create_guild(guild_id: int, guild_name: str, **kwargs) -> None:
             await session.commit()
             _invalidate_cache()
     except Exception as e:
-        LOGGER.exception(f"Error creating guild: {e}")
+        LOGGER.exception("Error creating guild")
 
 
 async def update_guild(
@@ -188,7 +188,7 @@ async def update_guild(
             _invalidate_cache()
             return guild
     except Exception as e:
-        LOGGER.exception(f"Error updating guild: {e}")
+        LOGGER.exception("Error updating guild")
         return None
 
 
@@ -211,4 +211,4 @@ async def delete_guild(guild_id: int) -> None:
             await session.commit()
             _invalidate_cache()
     except Exception as e:
-        LOGGER.exception(f"Error deleting guild: {e}")
+        LOGGER.exception("Error deleting guild")

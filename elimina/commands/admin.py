@@ -4,7 +4,7 @@ from discord.ext import commands
 
 from elimina import LOGGER
 from elimina.constants import COLORS
-from elimina.db.guild import *
+from elimina.db.guild import get_guild, get_whitelists, update_guild
 from elimina.exceptions.elimina_exceptions import TimeValueError
 
 
@@ -127,4 +127,4 @@ class Admin(commands.Cog):
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Admin(bot))
-    LOGGER.info(f"Cog Loaded: {Admin.__cog_name__}")
+    LOGGER.info("Cog Loaded: %s", Admin.__cog_name__)
