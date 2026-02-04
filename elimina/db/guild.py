@@ -39,7 +39,7 @@ async def get_whitelists() -> Optional[Dict[int, Dict[str, Set[int]]]]:
 async def transform_lists(guilds: List[Guild]) -> List[Guild]:
     for i, guild in enumerate(guilds):
         channels = json.loads(guild.toggled_channels)
-        bots = json.loads(guild.toggled_channels)
+        bots = json.loads(guild.ignored_bots)
         guilds[i].toggled_channels = channels
         guilds[i].ignored_bots = bots
     return guilds
@@ -94,6 +94,7 @@ async def create_guild(guild_id: int, guild_name: str, **kwargs) -> None:
             session.add(guild)
             session.flush()
             session.commit()
+            cache.clear()
     except Exception as e:
         LOGGER.exception(f"Error creating guild: {e}")
 
@@ -147,18 +148,31 @@ async def update_guild(
             if delete_delay:
                 guild.delete_delay = delete_delay
             if enabled_channel:
-                json.dumps(json.loads(guild.toggled_channels).append(enabled_channel))
+                channels = json.loads(guild.toggled_channels)
+                if enabled_channel not in channels:
+                    channels.append(enabled_channel)
+                guild.toggled_channels = json.dumps(channels)
             if disabled_channel:
-                json.dumps(json.loads(guild.toggled_channels).remove(disabled_channel))
+                channels = json.loads(guild.toggled_channels)
+                if disabled_channel in channels:
+                    channels.remove(disabled_channel)
+                guild.toggled_channels = json.dumps(channels)
             if ignored_bot:
-                json.dumps(json.loads(guild.ignored_bots).append(ignored_bot))
+                bots = json.loads(guild.ignored_bots)
+                if ignored_bot not in bots:
+                    bots.append(ignored_bot)
+                guild.ignored_bots = json.dumps(bots)
             if unignored_bot:
-                json.dumps(json.loads(guild.ignored_bots).remove(unignored_bot))
+                bots = json.loads(guild.ignored_bots)
+                if unignored_bot in bots:
+                    bots.remove(unignored_bot)
+                guild.ignored_bots = json.dumps(bots)
             if image_snipe is not None:
                 guild.image_snipe = image_snipe
             if snipe_enabled is not None:
                 guild.snipe_enabled = snipe_enabled
             session.commit()
+            cache.clear()
             return guild
     except Exception as e:
         LOGGER.exception(f"Error updating guild: {e}")
@@ -182,5 +196,6 @@ async def delete_guild(guild_id: int) -> None:
             session.delete(guild)
             session.flush()
             session.commit()
+            cache.clear()
     except Exception as e:
         LOGGER.exception(f"Error deleting guild: {e}")
