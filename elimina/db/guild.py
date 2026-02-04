@@ -1,34 +1,44 @@
 import json
 from typing import Dict, List, Optional, Set
 
-import cachetools
-from sqlalchemy.orm import Session
+from sqlalchemy import select
 
 from elimina import LOGGER
-from elimina.db import engine
+from elimina.db import async_session
 from elimina.entities.guild import Guild
 from elimina.exceptions.db_exceptions import *
 
-cache = cachetools.LRUCache(maxsize=10000000)
+# Simple in-memory cache with manual invalidation
+_whitelist_cache: Optional[Dict[int, Dict[str, Set[int]]]] = None
 
 
-@cachetools.cached(cache)
+def _invalidate_cache() -> None:
+    global _whitelist_cache
+    _whitelist_cache = None
+
+
 async def get_whitelists() -> Optional[Dict[int, Dict[str, Set[int]]]]:
+    global _whitelist_cache
+    if _whitelist_cache is not None:
+        return _whitelist_cache
+
     try:
-        with Session(engine) as session:
-            result = session.query(
-                Guild.id, Guild.toggled_channels, Guild.ignored_bots
-            ).all()
+        async with async_session() as session:
+            result = await session.execute(
+                select(Guild.id, Guild.toggled_channels, Guild.ignored_bots)
+            )
+            rows = result.all()
             m: Dict[int, Dict[str, Set[int]]] = {}
-            if not result:
+            if not rows:
                 raise EntityNotFoundError()
-            for _id, channels, bots in result:
+            for _id, channels, bots in rows:
                 channels = json.loads(channels)
                 bots = json.loads(bots)
                 if _id not in m:
                     m[_id] = {}
                 m[_id]["channels"] = set(channels)
                 m[_id]["bots"] = set(bots)
+            _whitelist_cache = m
             return m
 
     except Exception as e:
@@ -59,12 +69,15 @@ async def get_guild(id: Optional[int]) -> Optional[List[Guild]]:
             An optional list of `Guild` objects.
     """
     try:
-        with Session(engine) as session:
-            return await transform_lists(
-                session.query(Guild).filter(Guild.id == id).all()
-                if id
-                else session.query(Guild).all()
-            )
+        async with async_session() as session:
+            if id:
+                result = await session.execute(
+                    select(Guild).where(Guild.id == id)
+                )
+            else:
+                result = await session.execute(select(Guild))
+            guilds = list(result.scalars().all())
+            return await transform_lists(guilds)
     except Exception as e:
         LOGGER.exception(f"Error getting guild: {e}")
         return None
@@ -86,15 +99,15 @@ async def create_guild(guild_id: int, guild_name: str, **kwargs) -> None:
             An optional `Guild` object if the creation is successful. `None` otherwise.
     """
     try:
-        with Session(engine) as session:
-            guild = await get_guild(guild_id)
-            if guild:
+        async with async_session() as session:
+            existing = await session.get(Guild, guild_id)
+            if existing:
                 raise PrimaryKeyViolationError()
             guild = Guild(id=guild_id, name=guild_name, **kwargs)
             session.add(guild)
-            session.flush()
-            session.commit()
-            cache.clear()
+            await session.flush()
+            await session.commit()
+            _invalidate_cache()
     except Exception as e:
         LOGGER.exception(f"Error creating guild: {e}")
 
@@ -139,8 +152,8 @@ async def update_guild(
             An optional `Guild` object if the updation is successful. `None` otherwise.
     """
     try:
-        with Session(engine) as session:
-            guild: Guild | None = session.get(Guild, {"id": guild_id})
+        async with async_session() as session:
+            guild: Guild | None = await session.get(Guild, guild_id)
             if not guild:
                 raise EntityNotFoundError()
             if guild_name:
@@ -171,8 +184,8 @@ async def update_guild(
                 guild.image_snipe = image_snipe
             if snipe_enabled is not None:
                 guild.snipe_enabled = snipe_enabled
-            session.commit()
-            cache.clear()
+            await session.commit()
+            _invalidate_cache()
             return guild
     except Exception as e:
         LOGGER.exception(f"Error updating guild: {e}")
@@ -189,13 +202,13 @@ async def delete_guild(guild_id: int) -> None:
             The `id` of the Guild to be deleted.
     """
     try:
-        with Session(engine) as session:
-            guild: Guild | None = session.get(Guild, {"id": guild_id})
+        async with async_session() as session:
+            guild: Guild | None = await session.get(Guild, guild_id)
             if not guild:
                 raise EntityNotFoundError()
-            session.delete(guild)
-            session.flush()
-            session.commit()
-            cache.clear()
+            await session.delete(guild)
+            await session.flush()
+            await session.commit()
+            _invalidate_cache()
     except Exception as e:
         LOGGER.exception(f"Error deleting guild: {e}")
